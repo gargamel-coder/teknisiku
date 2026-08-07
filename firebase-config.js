@@ -10,12 +10,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/fireba
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "GANTI_DENGAN_API_KEY_KAMU",
-  authDomain: "GANTI.firebaseapp.com",
-  projectId: "GANTI_PROJECT_ID",
-  storageBucket: "GANTI.appspot.com",
-  messagingSenderId: "GANTI_SENDER_ID",
-  appId: "GANTI_APP_ID",
+  apiKey: "AIzaSyD7R1wZETC86EYYTVPraFtjey5uW9t45qk",
+  authDomain: "teknisiku-27450.firebaseapp.com",
+  projectId: "teknisiku-27450",
+  storageBucket: "teknisiku-27450.firebasestorage.app",
+  messagingSenderId: "983640084714",
+  appId: "1:983640084714:web:8e7acfab0f4c0010bf4793",
+  measurementId: "G-FF3LQYLG2P"
 };
 
 // Dibungkus try/catch supaya kalau config belum diisi / salah, halaman tetap
