@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Teknisiku — Portal Teknisi</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#FAF4E4" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,500;1,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --accent: #8C73F0;
+    --accent-dark: #6E58D6;
+    --bg: #FAF4E4;
+    --surface: #FDFBF3;
+    --surface-2: #F1E8D0;
+    --ink: #332E27;
+    --ink-soft: #857F6F;
+    --ink-faint: #B3AB94;
+    --line: #E8DFC4;
+    --wa: #3F9E6B;
+    --wa-dark: #2E7A50;
+    --gold: #C9A227;
+    --red: #C4534A;
+    --red-bg: #F3DEDB;
+    --blue: #4E7FD1;
+    --blue-bg: #DDE7F6;
+    --dot-red: #EC6A5E;
+    --dot-yellow: #F4BF4F;
+    --dot-green: #61C554;
+    --shadow-card-sm: 0 10px 22px -14px rgba(60,50,20,.18);
+    --radius-lg: 22px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Manrope', system-ui, sans-serif;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0; font-family: var(--font-body); font-weight:500; color: var(--ink);
+    background: var(--bg); min-height:100vh; -webkit-font-smoothing: antialiased;
+  }
+  button{ font-family: inherit; }
+  input,select,textarea{ font-family: inherit; }
+  a{ color: inherit; }
+  .hidden{ display:none !important; }
+
+  .app{ max-width: 560px; margin:0 auto; min-height:100vh; padding-bottom: 60px; }
+
+  /* ---------- Title bar ---------- */
+  .appbar{ padding: 18px 22px 20px; background: var(--bg); border-bottom: 1.5px solid var(--line); }
+  .traffic-dots{ display:flex; gap:7px; margin-bottom: 16px; }
+  .traffic-dots span{ width:11px; height:11px; border-radius:50%; display:block; }
+  .traffic-dots span:nth-child(1){ background: var(--dot-red); }
+  .traffic-dots span:nth-child(2){ background: var(--dot-yellow); }
+  .traffic-dots span:nth-child(3){ background: var(--dot-green); }
+  .appbar-row{ display:flex; align-items:center; gap:10px; }
+  .brand{ display:flex; align-items:center; gap:9px; flex:1; min-width:0; }
+  .logo-pill{
+    font-family: var(--font-display); font-style: italic; font-weight:600; font-size: 1.08rem;
+    color: var(--ink); line-height:1; flex:none;
+  }
+  .logo-pill::before{ content:"❋ "; color: var(--accent); font-style: normal; }
+  .tech-badge{
+    font-size: .68rem; font-weight:800; color: var(--accent-dark); background: var(--surface-2);
+    border-radius: 999px; padding: 4px 10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px;
+  }
+  .logout-btn{
+    border: 1.5px solid var(--line); background: var(--surface); color: var(--ink-soft);
+    font-size:.76rem; font-weight:700; padding: 8px 14px; border-radius: 999px; cursor:pointer; flex:none;
+  }
+  .logout-btn:active{ transform: scale(.96); }
+
+  .menu-wrap{ position:relative; flex:none; }
+  .menu-btn{
+    border:1.5px solid var(--line); background: var(--surface); color: var(--ink);
+    width:36px; height:36px; border-radius:50%; font-size:1.15rem; font-weight:800;
+    cursor:pointer; line-height:1; flex:none;
+  }
+  .menu-btn:active{ transform: scale(.94); }
+  .menu-dropdown{
+    position:absolute; right:0; top:calc(100% + 8px); z-index:60;
+    background: var(--surface); border:1.5px solid var(--line); border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card-sm); min-width:196px; padding:6px; display:flex; flex-direction:column; gap:2px;
+  }
+  .menu-dropdown button{
+    display:flex; align-items:center; gap:9px; width:100%; text-align:left;
+    background:none; border:none; padding:11px 12px; border-radius:10px;
+    font-size:.84rem; font-weight:700; color: var(--ink); cursor:pointer; font-family: inherit;
+  }
+  .menu-dropdown button:active{ background: var(--surface-2); }
+  .menu-dropdown button.danger{ color:#C0392B; }
+
+  /* ---------- Login gate ---------- */
+  .login-wrap{ min-height: 100vh; display:flex; align-items:center; justify-content:center; padding: 24px; }
+  .login-card{
+    width:100%; max-width: 380px; background: var(--surface); border:1.5px solid var(--line);
+    border-radius: var(--radius-lg); padding: 30px 26px; box-shadow: var(--shadow-card-sm);
+  }
+  .login-card .logo-pill{ font-size:1.3rem; display:block; margin-bottom: 6px; text-align:center; }
+  .login-card p{ color: var(--ink-soft); font-size:.85rem; line-height:1.5; margin: 6px 0 20px; text-align:center; }
+  .login-card input{
+    width:100%; border:1.5px solid var(--line); background: var(--surface-2); border-radius: var(--radius-sm);
+    padding:12px 14px; font-size:.9rem; font-weight:600; color: var(--ink); outline:none; margin-bottom: 10px;
+  }
+  .login-card input:focus{ border-color: var(--accent); }
+  .login-btn{
+    width:100%; border:none; cursor:pointer; background: linear-gradient(100deg, var(--accent), var(--accent-dark));
+    color:#fff; font-weight:700; font-size:.94rem; padding:13px; border-radius: 999px; margin-top:6px;
+  }
+  .login-btn:active{ transform: scale(.98); }
+  .login-error{ color: var(--red); font-size:.78rem; font-weight:700; margin-top:10px; min-height:16px; text-align:center; }
+  .login-hint{ font-size:.7rem; color: var(--ink-faint); margin-top:16px; text-align:center; line-height:1.5; }
+
+  .tech-search-results{ max-height:220px; overflow-y:auto; border:1.5px solid var(--line); border-radius: var(--radius-sm); margin-bottom:10px; }
+  .tech-search-row{ padding:10px 13px; font-size:.85rem; font-weight:600; cursor:pointer; border-bottom:1px solid var(--line); }
+  .tech-search-row:last-child{ border-bottom:none; }
+  .tech-search-row:hover, .tech-search-row.sel{ background: var(--surface-2); }
+  .picked-tech{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    background: var(--surface-2); border-radius: var(--radius-sm); padding: 10px 13px; margin-bottom:14px;
+    font-size:.85rem; font-weight:700;
+  }
+  .picked-tech button{ border:none; background:none; color: var(--ink-soft); font-size:.72rem; font-weight:700; cursor:pointer; }
+
+  /* ---------- Dashboard ---------- */
+  .content{ padding: 22px; }
+  .stat-row{ display:flex; gap:9px; margin-bottom: 20px; }
+  .stat-card{
+    flex:1; background: var(--surface); border:1.5px solid var(--line); border-radius: var(--radius-sm);
+    padding: 12px 6px; text-align:center;
+  }
+  .stat-card .num{ font-family: var(--font-display); font-weight:600; font-size:1.2rem; color: var(--accent-dark); }
+  .stat-card .lbl{ font-size:.6rem; color: var(--ink-soft); font-weight:700; margin-top:3px; text-transform:uppercase; letter-spacing:.02em; }
+
+  .tabs{ display:flex; gap:8px; margin-bottom: 18px; }
+  .tab-btn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+    border:1.5px solid var(--line); background: var(--surface); color: var(--ink-soft);
+    font-weight:700; font-size:.82rem; padding: 11px 6px; border-radius: 999px; cursor:pointer;
+  }
+  .tab-btn svg{ width:15px; height:15px; }
+  .tab-btn.active{ background: var(--accent); border-color: var(--accent); color:#fff; }
+
+  .filter-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 16px; }
+  .filter-chip{
+    border:1.5px solid var(--line); background: var(--surface); color: var(--ink);
+    font-size:.76rem; font-weight:700; padding: 7px 13px; border-radius:999px; cursor:pointer;
+  }
+  .filter-chip.active{ background: var(--ink); border-color: var(--ink); color:#fff; }
+  .cal-toggle{
+    border:1.5px solid var(--accent); background: var(--surface); color: var(--accent-dark);
+    font-size:.76rem; font-weight:700; padding: 7px 13px; border-radius:999px; cursor:pointer;
+  }
+  .cal-toggle.active{ background: var(--accent); color:#fff; }
+
+  /* ---------- Calendar ---------- */
+  .cal-panel{
+    background: var(--surface); border:1.5px solid var(--line); border-radius: var(--radius-lg);
+    padding: 16px; margin-bottom: 18px;
+  }
+  .cal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .cal-head b{ font-family: var(--font-display); font-size:1rem; }
+  .cal-nav{ display:flex; gap:6px; }
+  .cal-nav button{
+    width:28px; height:28px; border-radius:50%; border:1.5px solid var(--line); background: var(--surface-2);
+    cursor:pointer; display:flex; align-items:center; justify-content:center; color: var(--ink);
+  }
+  .cal-grid{ display:grid; grid-template-columns: repeat(7,1fr); gap:4px; }
+  .cal-dow{ text-align:center; font-size:.66rem; font-weight:800; color: var(--ink-faint); padding:4px 0; }
+  .cal-day{
+    position:relative; text-align:center; padding:8px 0; border-radius:10px; font-size:.78rem; font-weight:700;
+    cursor:pointer; color: var(--ink);
+  }
+  .cal-day.other{ color: var(--ink-faint); font-weight:500; cursor:default; }
+  .cal-day.today{ background: var(--surface-2); }
+  .cal-day.selected{ background: var(--accent); color:#fff; }
+  .cal-day .dot{ position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background: var(--accent); }
+  .cal-day.selected .dot{ background:#fff; }
+  .cal-day.almost-full{ box-shadow: inset 0 0 0 2px #E8A93B; }
+  .cal-day.almost-full::after{ content:""; position:absolute; top:3px; right:4px; width:5px; height:5px; border-radius:50%; background:#E8A93B; }
+  .cal-day.full-booked{ box-shadow: inset 0 0 0 2px #E4574F; background: rgba(228,87,79,0.10); }
+  .cal-day.full-booked::after{ content:""; position:absolute; top:3px; right:4px; width:5px; height:5px; border-radius:50%; background:#E4574F; }
+  .cal-day.selected.almost-full, .cal-day.selected.full-booked{ box-shadow: inset 0 0 0 2px #fff; }
+
+  #availActions{ margin-top:2px; }
+  .avail-label{ font-size:.76rem; font-weight:700; color: var(--ink-soft); margin: 10px 2px 8px; }
+  .avail-btn-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .avail-btn{
+    border:1.5px solid var(--line); background: var(--surface); color: var(--ink);
+    font-weight:700; font-size:.74rem; padding: 7px 12px; border-radius: 999px; cursor:pointer;
+  }
+  .avail-btn.active{ background: var(--accent); border-color: var(--accent); color:#fff; }
+  .cal-clear-row{ text-align:center; margin-top:10px; }
+  .cal-clear-row button{ border:none; background:none; color: var(--accent-dark); font-size:.78rem; font-weight:700; cursor:pointer; }
+
+  /* ---------- Orders ---------- */
+  .order-list{ display:flex; flex-direction:column; gap:14px; }
+  .order-card{
+    background: var(--surface); border:1.5px solid var(--line); border-radius: var(--radius-lg);
+    padding: 18px; box-shadow: var(--shadow-card-sm);
+  }
+  .order-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:12px; }
+  .order-customer{ font-weight:700; font-size:.96rem; font-family: var(--font-display); }
+  .order-phone{ font-size:.76rem; color: var(--ink-soft); font-weight:600; margin-top:2px; }
+  .order-id{ font-size:.66rem; color: var(--ink-faint); font-weight:700; text-align:right; }
+  .status-pill{ font-size:.66rem; font-weight:800; padding:4px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:.03em; display:inline-block; margin-top:4px; }
+  .status-pill.pending{ background:#F5E9CB; color:#9C7A1F; }
+  .status-pill.confirmed{ background: var(--blue-bg); color: var(--blue); }
+  .status-pill.done{ background:#DCEFE3; color: var(--wa-dark); }
+  .status-pill.cancelled{ background: var(--red-bg); color: var(--red); }
+
+  .order-row{ display:flex; gap:8px; font-size:.82rem; color: var(--ink); margin-bottom:6px; line-height:1.5; }
+  .order-row b{ color: var(--ink-soft); font-weight:700; flex:none; min-width:78px; }
+  .order-services{ background: var(--surface-2); border-radius: var(--radius-sm); padding:10px 13px; margin: 10px 0; font-size:.82rem; }
+  .order-services div{ padding:2px 0; }
+  .assigned-tag{
+    display:inline-flex; align-items:center; gap:5px; font-size:.72rem; font-weight:700; color: var(--accent-dark);
+    background: var(--surface-2); border-radius:999px; padding:5px 11px; margin-top:8px;
+  }
+
+  .order-actions{ display:flex; gap:8px; margin-top: 14px; flex-wrap:wrap; }
+  .order-actions select, .order-actions button{
+    border:1.5px solid var(--line); background: var(--surface); color: var(--ink);
+    font-weight:700; font-size:.78rem; padding: 9px 12px; border-radius: 999px; cursor:pointer;
+  }
+  .btn-assign{ background: var(--accent); border-color: var(--accent); color:#fff; flex:1; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .btn-assign svg{ width:14px; height:14px; }
+  .btn-invoice{ background: var(--wa-dark); border-color: var(--wa-dark); color:#fff; flex:1; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .btn-invoice svg{ width:14px; height:14px; }
+
+  .invoice-item-row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .invoice-item-row .invoice-item-label{ flex:1; font-size:.84rem; font-weight:600; color: var(--ink); }
+  .invoice-item-row .invoice-item-label small{ display:block; font-weight:500; color: var(--ink-soft); font-size:.72rem; }
+  .invoice-item-row input{
+    width:120px; flex:none; border:1.5px solid var(--line); background: var(--surface); color: var(--ink);
+    font-weight:700; font-size:.86rem; padding:9px 11px; border-radius: var(--radius-sm); text-align:right;
+  }
+  .invoice-total-row{
+    display:flex; align-items:center; justify-content:space-between; background: var(--surface-2);
+    border-radius: var(--radius-sm); padding:12px 14px; margin: 4px 0 14px; font-size:.92rem; font-weight:700; color: var(--ink);
+  }
+  .invoice-total-row b{ font-size:1.15rem; color: var(--accent-dark); }
+
+  .empty-state{ text-align:center; padding: 40px 12px; }
+  .empty-state .emoji{ font-size:2rem; }
+  .empty-state h3{ font-family: var(--font-display); font-weight:600; font-size:1.1rem; margin:12px 0 6px; }
+  .empty-state p{ color: var(--ink-soft); font-size:.85rem; line-height:1.5; }
+
+  /* ---------- Tim Saya ---------- */
+  .add-btn{
+    display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    border:none; cursor:pointer; background: linear-gradient(100deg, var(--accent), var(--accent-dark));
+    color:#fff; font-weight:700; font-size:.9rem; padding:13px; border-radius:999px; margin-bottom:16px;
+  }
+  .add-btn svg{ width:16px; height:16px; }
+  .add-btn:active{ transform: scale(.98); }
+  .inline-form{
+    background: var(--surface); border:1.5px solid var(--line); border-radius: var(--radius-lg);
+    padding: 18px; margin-bottom: 18px; display:flex; flex-direction:column; gap:13px;
+  }
+  .field label{ display:block; font-size:.8rem; font-weight:700; color: var(--ink); margin-bottom:8px; }
+  .field input, .field select, .field textarea{
+    width:100%; border:1.5px solid var(--line); background: var(--surface-2); border-radius: var(--radius-sm);
+    padding:11px 13px; font-size:.86rem; font-weight:600; color: var(--ink); outline:none;
+  }
+  .field input:focus, .field select:focus{ border-color: var(--accent); }
+  .form-error{ font-size:.76rem; font-weight:700; color: var(--red); }
+  .form-actions{ display:flex; gap:10px; }
+  .form-cancel, .form-submit{ flex:1; border:none; cursor:pointer; padding:12px; border-radius:999px; font-weight:700; font-size:.86rem; }
+  .form-cancel{ background: var(--surface-2); color: var(--ink-soft); }
+  .form-submit{ background: var(--accent); color:#fff; }
+
+  .member-row{
+    background: var(--surface); border:1.5px solid var(--line); border-radius: var(--radius-md);
+    padding: 13px 16px; display:flex; align-items:center; gap:12px; margin-bottom:10px;
+  }
+  .member-row .avatar{
+    width:38px; height:38px; border-radius:50%; background: var(--accent); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-family: var(--font-display);
+    font-weight:600; font-size:.82rem; flex:none;
+  }
+  .member-row .info{ flex:1; min-width:0; }
+  .member-row .name{ font-weight:700; font-size:.87rem; }
+  .member-row .phone{ font-size:.72rem; color: var(--ink-soft); font-weight:600; margin-top:2px; }
+  .member-del{ border:none; background:none; cursor:pointer; color: var(--red); padding:6px; display:flex; }
+  .member-del svg{ width:15px; height:15px; }
+
+  /* ---------- Review tab ---------- */
+  .review-card{
+    background: var(--surface); border:1.5px solid var(--line); border-radius: var(--radius-lg);
+    padding: 16px 18px; margin-bottom: 12px;
+  }
+  .review-name{ font-weight:700; font-size:.88rem; font-family: var(--font-display); }
+  .review-text{ font-size:.84rem; color: var(--ink); font-style:italic; font-family: var(--font-display); line-height:1.55; margin-top:6px; }
+
+  /* ---------- Assign modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(30,25,15,.55); z-index:60;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-card{
+    width:100%; max-width:400px; background: var(--surface); border-radius: var(--radius-lg);
+    padding: 22px; max-height:85vh; overflow-y:auto;
+  }
+  .modal-title{ font-family: var(--font-display); font-weight:600; font-size:1.15rem; margin-bottom:6px; }
+  .modal-sub{ font-size:.82rem; color: var(--ink-soft); margin-bottom:18px; line-height:1.5; }
+  .modal-actions{ display:flex; gap:10px; margin-top:16px; }
+  .modal-cancel, .modal-confirm{ flex:1; border:none; cursor:pointer; padding:13px; border-radius:999px; font-weight:700; font-size:.88rem; }
+  .modal-cancel{ background: var(--surface-2); color: var(--ink-soft); }
+  .modal-confirm{ background: var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; gap:7px; }
+  .modal-confirm:disabled{ opacity:.5; cursor:not-allowed; }
+
+  .toast{
+    position: fixed; left:50%; bottom: 26px; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color:#fff; padding: 13px 20px; border-radius: 14px;
+    font-size: .82rem; font-weight:700; box-shadow: 0 14px 30px -10px rgba(20,25,60,.5);
+    opacity:0; pointer-events:none; transition: all .25s ease; z-index: 80; max-width: 90%; text-align:center;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Printable order card (off-screen render target) ---------- */
+  #orderCardTemplate{ position:fixed; left:-9999px; top:0; }
+  .card-print{
+    width:520px; background:#FDFBF3; padding:36px; font-family:'Manrope', sans-serif; color:#332E27;
+  }
+  .card-print .cp-head{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #332E27; padding-bottom:16px; margin-bottom:18px; }
+  .card-print .cp-logo{ font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:1.5rem; }
+  .card-print .cp-logo b{ color:#8C73F0; font-style:normal; }
+  .card-print .cp-tag{ font-size:.7rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:#857F6F; margin-top:4px; }
+  .card-print .cp-id{ text-align:right; font-size:.78rem; font-weight:700; color:#857F6F; }
+  .card-print .cp-section{ margin-bottom:16px; }
+  .card-print .cp-label{ font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:#857F6F; margin-bottom:5px; }
+  .card-print .cp-value{ font-size:1rem; font-weight:700; }
+  .card-print .cp-row{ display:flex; gap:24px; }
+  .card-print .cp-row > div{ flex:1; }
+  .card-print .cp-assigned{
+    background:#EFE8FB; border:1.5px solid #8C73F0; border-radius:14px; padding:14px 16px; margin:18px 0;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .card-print .cp-services{ background:#F1E8D0; border-radius:12px; padding:12px 16px; font-size:.9rem; }
+  .card-print .cp-services div{ padding:3px 0; }
+  .card-print .cp-footer{ border-top:1.5px dashed #E8DFC4; margin-top:20px; padding-top:14px; font-size:.7rem; color:#B3AB94; text-align:center; }
+
+  /* ---------- Invoice (tampilan seperti contoh: header split, rincian per servis, kotak pembayaran) ---------- */
+  .inv-print{ width:560px; background:#FDFBF3; padding:40px; font-family:'Manrope', sans-serif; color:#332E27; }
+  .inv-head{ display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #332E27; padding-bottom:18px; margin-bottom:22px; }
+  .inv-brand{ font-family:'Fraunces', serif; font-size:1.7rem; }
+  .inv-brand b{ font-weight:600; }
+  .inv-brand i{ color:#8C73F0; font-style:italic; font-weight:600; }
+  .inv-tagline{ font-size:.72rem; font-weight:700; color:#857F6F; margin-top:6px; }
+  .inv-areas{ font-size:.72rem; color:#857F6F; margin-top:2px; }
+  .inv-title-block{ text-align:right; }
+  .inv-title{ font-family:'Fraunces', serif; font-size:1.6rem; letter-spacing:.04em; }
+  .inv-meta{ font-size:.76rem; color:#857F6F; margin-top:8px; line-height:1.6; }
+  .inv-meta b{ color:#332E27; }
+
+  .inv-grid2{ display:flex; gap:28px; margin-bottom:22px; }
+  .inv-grid2 > div{ flex:1; }
+  .inv-block-label{ font-size:.66rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:#857F6F; margin-bottom:8px; }
+  .inv-name{ font-size:1rem; font-weight:700; margin-bottom:3px; }
+  .inv-line{ font-size:.82rem; color:#5A5548; line-height:1.5; }
+  .inv-line b{ color:#332E27; }
+
+  .inv-divider{ border-top:1.5px solid #E8DFC4; margin: 4px 0 14px; }
+  .inv-table-head{ display:flex; justify-content:space-between; font-size:.66rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:#857F6F; padding-bottom:8px; border-bottom:1.5px solid #E8DFC4; margin-bottom:10px; }
+  .inv-item-row{ display:flex; justify-content:space-between; align-items:flex-start; padding:9px 0; }
+  .inv-item-name{ font-weight:700; font-size:.9rem; }
+  .inv-item-sub{ font-size:.74rem; color:#857F6F; margin-top:2px; }
+  .inv-item-price{ font-weight:700; font-size:.9rem; white-space:nowrap; padding-left:16px; }
+
+  .inv-summary{ display:flex; justify-content:flex-end; margin-top:10px; }
+  .inv-summary-box{ width:220px; }
+  .inv-summary-row{ display:flex; justify-content:space-between; font-size:.84rem; padding:5px 0; }
+  .inv-summary-row.extra{ color:#2E7D32; }
+  .inv-summary-total{ display:flex; justify-content:space-between; border-top:1.5px solid #332E27; margin-top:6px; padding-top:10px; font-size:1.05rem; font-weight:700; }
+  .inv-summary-total b{ font-family:'Fraunces', serif; font-size:1.3rem; color:#8C73F0; }
+
+  .inv-pay-box{ border:1.5px solid #E8DFC4; border-radius:16px; padding:20px; margin-top:26px; }
+  .inv-pay-title{ font-weight:700; font-size:.95rem; margin-bottom:2px; }
+  .inv-pay-sub{ font-size:.72rem; color:#857F6F; margin-bottom:12px; }
+  .inv-pay-account{ background:#F1E8D0; border-radius:12px; padding:14px 16px; }
+  .inv-pay-account .bank{ font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:#857F6F; }
+  .inv-pay-account .num{ font-family:'Fraunces', serif; font-size:1.25rem; font-weight:600; margin:3px 0; }
+  .inv-pay-account .an{ font-size:.82rem; font-weight:700; }
+  .inv-pay-cash{ font-size:.84rem; color:#5A5548; }
+
+  .inv-note{ margin-top:22px; font-size:.78rem; color:#857F6F; line-height:1.6; }
+  .inv-note b{ color:#332E27; }
+  .inv-footer{ border-top:1.5px dashed #E8DFC4; margin-top:18px; padding-top:12px; display:flex; justify-content:space-between; font-size:.7rem; color:#B3AB94; }
+
+  /* ====== ADDED: Change PIN Feature ====== */
+  .pin-btn{
+    border: 1.5px solid var(--accent); background: var(--surface); color: var(--accent-dark);
+    font-size:.76rem; font-weight:700; padding: 8px 14px; border-radius: 999px; cursor:pointer; flex:none;
+  }
+  .pin-btn:active{ transform: scale(.96); }
+  .pin-input-wrap{ position:relative; margin-bottom:0; }
+  .pin-input-wrap input{
+    padding:11px 42px 11px 13px !important;
+    letter-spacing: 8px;
+    text-align:center;
+    font-size:1.1rem;
+    font-weight:700;
+  }
+  .pin-toggle{
+    position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    border:none; background:none; cursor:pointer; font-size:1rem; padding:4px; line-height:1;
+  }
+  .pin-info{
+    background: var(--surface-2); border:1.5px solid var(--line); border-radius: var(--radius-sm);
+    padding: 10px 13px; font-size:.78rem; color: var(--ink-soft); line-height:1.5; margin-bottom: 14px;
+  }
+  .pin-info b{ color: var(--ink); }
+  /* ====== END ADDED ====== */
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN GATE ===== -->
+<div class="login-wrap" id="loginScreen">
+  <div class="login-card">
+    <span class="logo-pill">Teknisiku</span>
+    <p>Portal khusus teknisi/bengkel — kelola pesanan, tim, dan review kamu di sini.</p>
+
+    <div id="searchStep">
+      <input type="text" id="techSearchInput" placeholder="Cari nama usaha/teknisi kamu..." autocomplete="off" />
+      <div class="tech-search-results hidden" id="techSearchResults"></div>
+    </div>
+
+    <div id="pickedStep" class="hidden">
+      <div class="picked-tech">
+        <span id="pickedTechName">-</span>
+        <button id="changePickedBtn">Ganti</button>
+      </div>
+      <input type="password" id="pinInput" placeholder="Masukkan PIN" maxlength="4" />
+      <button class="login-btn" id="loginBtn">Masuk</button>
+    </div>
+
+    <div class="login-error" id="loginError"></div>
+    <div class="login-hint">Belum punya PIN atau lupa PIN? Hubungi admin Teknisiku.</div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="app hidden" id="dashboard">
+  <div class="appbar">
+    <div class="traffic-dots"><span></span><span></span><span></span></div>
+    <div class="appbar-row">
+      <div class="brand">
+        <span class="logo-pill">Teknisiku</span>
+        <span class="tech-badge" id="techBadgeName">-</span>
+      </div>
+      <div class="menu-wrap">
+        <button class="menu-btn" id="menuToggleBtn" aria-label="Menu">⋮</button>
+        <div class="menu-dropdown hidden" id="menuDropdown">
+          <button id="paymentInfoBtn">💳 <span>Info Pembayaran</span></button>
+          <button id="changePinBtn">🔑 <span>Ganti PIN</span></button>
+          <button id="logoutBtn" class="danger">🚪 <span>Keluar</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="stat-row">
+      <div class="stat-card"><div class="num" id="statTotal">0</div><div class="lbl">Total</div></div>
+      <div class="stat-card"><div class="num" id="statPending">0</div><div class="lbl">Menunggu</div></div>
+      <div class="stat-card"><div class="num" id="statConfirmed">0</div><div class="lbl">Konfirmasi</div></div>
+      <div class="stat-card"><div class="num" id="statDone">0</div><div class="lbl">Selesai</div></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="orders">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>Pesanan</span>
+      </button>
+      <button class="tab-btn" data-tab="team">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Tim Saya</span>
+      </button>
+      <button class="tab-btn" data-tab="reviews">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.4 6.9.9-5 4.9 1.3 6.9L12 17.8 5.9 21l1.3-6.9-5-4.9 6.9-.9z"/></svg>
+        <span>Review</span>
+      </button>
+    </div>
+
+    <!-- ===== TAB: PESANAN ===== -->
+    <section id="tab-orders">
+      <div class="filter-chips">
+        <button class="filter-chip active" data-ofilter="all">Semua</button>
+        <button class="filter-chip" data-ofilter="pending">⏳ Menunggu</button>
+        <button class="filter-chip" data-ofilter="confirmed">✅ Dikonfirmasi</button>
+        <button class="filter-chip" data-ofilter="done">🏁 Selesai</button>
+        <button class="filter-chip" data-ofilter="cancelled">❌ Batal</button>
+        <button class="cal-toggle" id="calToggle">📅 Filter Tanggal</button>
+      </div>
+
+      <div class="cal-panel hidden" id="calPanel">
+        <div class="cal-head">
+          <div class="cal-nav"><button id="calPrev">‹</button></div>
+          <b id="calLabel">-</b>
+          <div class="cal-nav"><button id="calNext">›</button></div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div id="availActions"></div>
+        <div class="cal-clear-row"><button id="calClear">Hapus filter tanggal</button></div>
+      </div>
+
+      <div class="order-list" id="orderList"></div>
+      <div class="empty-state hidden" id="orderEmpty">
+        <div class="emoji">📭</div>
+        <h3>Belum ada pesanan</h3>
+        <p>Pesanan yang masuk lewat halaman utama Teknisiku akan muncul di sini.</p>
+      </div>
+    </section>
+
+    <!-- ===== TAB: TIM SAYA ===== -->
+    <section id="tab-team" class="hidden">
+      <button class="add-btn" id="addMemberBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Tambah Anggota Tim</span>
+      </button>
+      <div class="inline-form hidden" id="memberForm">
+        <div class="field"><label>Nama Anggota</label><input type="text" id="memberName" placeholder="Nama teknisi lapangan" /></div>
+        <div class="field"><label>No. HP <span style="color:var(--ink-faint); font-weight:500;">(opsional)</span></label><input type="text" id="memberPhone" placeholder="08xx xxxx xxxx" /></div>
+        <div class="form-error hidden" id="memberFormError"></div>
+        <div class="form-actions">
+          <button class="form-cancel" id="memberFormCancel">Batal</button>
+          <button class="form-submit" id="memberFormSubmit">Simpan</button>
+        </div>
+      </div>
+      <div id="memberList"></div>
+      <div class="empty-state hidden" id="memberEmpty">
+        <div class="emoji">👥</div>
+        <h3>Belum ada anggota tim</h3>
+        <p>Tambahkan nama-nama teknisi lapangan kamu supaya bisa di-assign ke pesanan.</p>
+      </div>
+    </section>
+
+    <!-- ===== TAB: REVIEW ===== -->
+    <section id="tab-reviews" class="hidden">
+      <div class="stat-row">
+        <div class="stat-card"><div class="num" id="statRevTotal">0</div><div class="lbl">Total Review</div></div>
+        <div class="stat-card"><div class="num" id="statRevApproved">0</div><div class="lbl">Tayang</div></div>
+        <div class="stat-card"><div class="num" id="statRevPending">0</div><div class="lbl">Ditinjau Admin</div></div>
+      </div>
+      <div id="reviewList"></div>
+      <div class="empty-state hidden" id="reviewEmpty">
+        <div class="emoji">⭐</div>
+        <h3>Belum ada review</h3>
+        <p>Review dari pelanggan yang sudah disetujui admin akan tampil di sini.</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ===== ASSIGN MODAL ===== -->
+<div class="modal-overlay hidden" id="assignModal">
+  <div class="modal-card">
+    <div class="modal-title">Assign & Cetak Kartu</div>
+    <div class="modal-sub" id="assignModalSub">Pilih anggota tim yang akan menangani order ini, lalu kartu order otomatis ke-download sebagai PDF.</div>
+    <div class="field">
+      <label>Anggota Tim</label>
+      <select id="assignMemberSelect"></select>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="assignCancel">Batal</button>
+      <button class="modal-confirm" id="assignConfirm">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        <span>Assign & Download</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="invoiceModal">
+  <div class="modal-card" style="max-width:420px;">
+    <div class="modal-title">🧾 Buat Invoice</div>
+    <div class="modal-sub" id="invoiceModalSub">Isi harga tiap servis secara manual, total dihitung otomatis.</div>
+    <div id="invoiceItemsWrap"></div>
+    <div class="field">
+      <label>Biaya Lain-lain <span class="hint">(opsional — transport, sparepart, dll)</span></label>
+      <input type="text" id="invoiceExtra" inputmode="numeric" placeholder="0" />
+    </div>
+    <div class="invoice-total-row">
+      <span>Total</span>
+      <b id="invoiceTotalPreview">Rp 0</b>
+    </div>
+    <div class="form-error hidden" id="invoiceError"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="invoiceCancel">Batal</button>
+      <button class="modal-confirm" id="invoiceConfirm">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+        <span>Simpan & Cetak Invoice</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="paymentModal">
+  <div class="modal-card">
+    <div class="modal-title">💳 Info Pembayaran</div>
+    <div class="modal-sub">Data ini otomatis muncul di invoice yang kamu cetak, supaya pelanggan tahu ke mana harus transfer.</div>
+    <div class="field">
+      <label>Nama Bank <span class="hint">(contoh: BCA, Mandiri, BRI, dll)</span></label>
+      <input type="text" id="payBankName" placeholder="Contoh: BCA" />
+    </div>
+    <div class="field">
+      <label>Nomor Rekening</label>
+      <input type="text" id="payAccountNumber" inputmode="numeric" placeholder="Contoh: 1234567890" />
+    </div>
+    <div class="field">
+      <label>Nama Pemilik Rekening</label>
+      <input type="text" id="payAccountName" placeholder="Sesuai nama di buku tabungan" />
+    </div>
+    <div class="field">
+      <label>Catatan Kaki Invoice <span class="hint">(opsional, kalau dikosongkan pakai catatan standar)</span></label>
+      <textarea id="payFooterNote" rows="2" placeholder="Contoh: Invoice ini sah tanpa tanda tangan dan cap. Terima kasih telah mempercayakan servis AC Anda kepada kami."></textarea>
+    </div>
+    <div class="form-error hidden" id="paymentError"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="paymentCancel">Batal</button>
+      <button class="modal-confirm" id="paymentSave">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="changePinModal">
+  <div class="modal-card">
+    <div class="modal-title">🔑 Ganti PIN</div>
+    <div class="modal-sub">Verifikasi PIN lama kamu, lalu buat PIN baru (4 digit angka).</div>
+    <div class="pin-info">
+      💡 Lupa PIN lama kamu? Hubungi admin Teknisiku untuk dibantu.
+    </div>
+    <div class="field">
+      <label>PIN Lama</label>
+      <div class="pin-input-wrap">
+        <input type="password" id="oldPinInput" maxlength="4" inputmode="numeric" placeholder="••••" />
+        <button type="button" class="pin-toggle" data-target="oldPinInput">👁</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>PIN Baru</label>
+      <div class="pin-input-wrap">
+        <input type="password" id="newPinInput" maxlength="4" inputmode="numeric" placeholder="••••" />
+        <button type="button" class="pin-toggle" data-target="newPinInput">👁</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Konfirmasi PIN Baru</label>
+      <div class="pin-input-wrap">
+        <input type="password" id="confirmPinInput" maxlength="4" inputmode="numeric" placeholder="••••" />
+        <button type="button" class="pin-toggle" data-target="confirmPinInput">👁</button>
+      </div>
+    </div>
+    <div class="form-error hidden" id="pinError"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="pinCancel">Batal</button>
+      <button class="modal-confirm" id="pinSave">Simpan PIN</button>
+    </div>
+  </div>
+</div>
+<!-- ====== END ADDED ====== -->
+
+<div class="toast" id="toast"></div>
+
+<!-- Off-screen order-card template rendered to canvas → PDF -->
+<div id="orderCardTemplate"></div>
+
+<script type="module">
+import { fetchAll, setById, updateById, removeById } from "./firebase-db.js";
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+const initials = (name) => {
+  const clean = String(name).replace(/\([^)]*\)/g, "").replace(/^(Kang|Bang|Pak|Bu|Mas|Mbak|Cak|Made|Tim|CV|PT)\.?\s+/i, "").trim();
+  const letters = clean.split(/\s+/).map(w => (w.match(/[A-Za-z]/) || [""])[0]).filter(Boolean);
+  return (letters.slice(0, 2).join("") || name[0] || "?").toUpperCase();
+};
+
+function showToast(msg){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+/* Built-in technician dataset (self-contained — no external file needed) */
+const BUILTIN_TECHNICIANS = [
+  { id: 1, name: "Romi Teknik", phone: "6285369574441",
+    areas: ["Lampung", "Kotabumi"],
+    testimoni: "Peralatan memasang AC dan perawatan yang lengkap sesuai prosedur.", submitter: "@pundingin", type: "Konsumen" },
+  { id: 2, name: "Rohim", phone: "6283895238498",
+    areas: ["Depok", "Jakarta Selatan", "Tangerang Selatan", "Jakarta Timur"],
+    testimoni: "Sudah 3x datang setiap 3 bulan, AC selalu prima. Tidak pernah menawarkan freon. Membawa tangga dan jet washer sendiri.", submitter: "@nizamaulia", type: "Konsumen" },
+  { id: 3, name: "Yurofudin", phone: "62818750893",
+    areas: ["Bekasi dan sekitarnya"],
+    testimoni: "Jujur amanah.", submitter: "@reyhangtg", type: "Konsumen" },
+  { id: 4, name: "Mas Aris (Service AC Berkah Depok)", phone: "6281219802645",
+    areas: ["Jabodetabek", "asal Depok Tanah Baru"],
+    testimoni: "Tidak pernah menyuruh isi freon, malah mengedukasi cara cuci AC sendiri. Minusnya agak ngantri.", submitter: "@jedarmawan", type: "Konsumen" },
+  { id: 5, name: "Barokah AC Service", phone: "6285718076690",
+    areas: ["Jakarta Timur", "Depok dan sekitarnya"],
+    testimoni: "Direkomendasikan warganet sebagai penyedia jasa AC yang jujur.", submitter: "Hahahihiland", type: "Konsumen" },
+  { id: 6, name: "Tukang AC Pak Nana Suryana", phone: "6281288020571",
+    areas: ["Kota Bekasi"],
+    testimoni: "Tidak pernah asal menyuruh isi freon meski ada kesempatan.", submitter: "@bambanggr", type: "Konsumen" },
+  { id: 7, name: "Samsuri", phone: "6281233523035",
+    areas: ["Surabaya"],
+    testimoni: "Melayani seperti keluarga sendiri.", submitter: "saam_surii", type: "Penyedia Jasa" },
+  { id: 8, name: "Irwansah", phone: "628980008367",
+    areas: ["Tangerang Selatan"],
+    testimoni: "Langganan lebih dari 1 tahun, kerjanya rapi dan cepat, transparan soal biaya komponen.", submitter: "@flashiela", type: "Konsumen" },
+  { id: 9, name: "Sentosa Teknik", phone: "6281325957722",
+    areas: ["Bantul", "Yogyakarta dan sekitarnya"],
+    testimoni: "5 tahun tidak pernah disuruh nambah freon, harga terjangkau dan komunikatif.", submitter: "@rizaasz", type: "Konsumen" },
+  { id: 10, name: "Wijaya Teknik (Harapan Indah)", phone: "6282125182398",
+    areas: ["Harapan Indah", "Kota Bekasi"],
+    testimoni: "Jujur, cuci AC sesuai tarif, pernah menolak isi freon karena tekanan masih normal.", submitter: "@mulerrr", type: "Konsumen" },
+  { id: 11, name: "Rizal AC dan Team", phone: "628567597897",
+    areas: ["Jakarta", "Jakarta Selatan", "Tangerang Selatan"],
+    testimoni: "Sangat transparan soal masalah, kerjaan rapi, harga cuci AC murah.", submitter: "@yudiandra", type: "Konsumen" },
+  { id: 12, name: "Service AC Malang / JF Engineering", phone: "6289508888955",
+    areas: ["Malang Kota"],
+    testimoni: "5 tahun pakai jasa yang sama, AC tetap dingin. Juga menyediakan AC second.", submitter: "ditakencana", type: "Konsumen" },
+  { id: 13, name: "Pak Zaenu", phone: "6289509415756",
+    areas: ["Lenteng Agung", "Jakarta Selatan", "Jabodetabek"],
+    testimoni: "Bilang sendiri AC tidak perlu isi freon kalau tidak bocor. Cepat merespons.", submitter: "@annarasuumanara", type: "Konsumen" },
+  { id: 14, name: "Budi", phone: "6287873557284",
+    areas: ["Citeureup", "Cibinong", "Kabupaten Bogor"],
+    testimoni: "Langganan setiap pasang, service, dan cuci AC. Jujur dan paham betul soal AC.", submitter: "@tomoebetter", type: "Konsumen" },
+  { id: 15, name: "Iyus", phone: "6283120009565",
+    areas: ["Kota Bandung"],
+    testimoni: "Jujur dan tidak manipulatif, harga standar, sikap sopan.", submitter: "@danaradiarto", type: "Konsumen" },
+  { id: 16, name: "Dwijaya AC", phone: "6285935324152",
+    areas: ["Denpasar", "Bali"],
+    testimoni: "Komunikasi enak, pengerjaan cepat dan tepat waktu.", submitter: "nirwanrahardian", type: "Konsumen" },
+  { id: 17, name: "Indocool AC", phone: "6285100060665",
+    areas: ["Solo"],
+    testimoni: "Direkomendasikan warganet di area Solo.", submitter: "@maniathtre", type: "Konsumen" },
+  { id: 18, name: "Pak Midi", phone: "6281332866092",
+    areas: ["Surabaya", "Nganjuk", "Kediri dan sekitarnya"],
+    testimoni: "Tidak akan menambah freon kalau tidak bongkar total. Banyak hotel & perusahaan jadi pelanggan.", submitter: "@harun_m_ishaq", type: "Konsumen" },
+  { id: 19, name: "Iman Diki", phone: "6281294856145",
+    areas: ["Kota Bogor"],
+    testimoni: "7 tahun langganan, belum pernah ditambahin freon sedikit pun. Kerjanya rapi dan telaten.", submitter: "@rdtlco", type: "Konsumen" },
+  { id: 20, name: "Parama AC - Pak Ugie", phone: "6281227104900",
+    areas: ["Banyumas", "Purwokerto", "Purbalingga"],
+    testimoni: "Informatif, tidak ada tipu-tipu, kerjanya sat-set.", submitter: "@Agungwjs", type: "Konsumen" },
+  { id: 21, name: "Yuda", phone: "6281392720637",
+    areas: ["Jakarta Timur", "Cilangkap", "Pondok Ranggon"],
+    testimoni: "Langganan sejak 2019, harga ganti freon murah dan bersihin AC benar.", submitter: "junhuicy", type: "Konsumen" },
+  { id: 22, name: "Mas Pandu", phone: "6285649597963",
+    areas: ["Bojonggede", "Cilebut", "Citayam"],
+    testimoni: "Terjadwal, kerja perorangan, hasil pemasangan rapi.", submitter: "@jack_cooper9117", type: "Konsumen" },
+  { id: 23, name: "Mas Prasetyo", phone: "6287876668949",
+    areas: ["Yogyakarta"],
+    testimoni: "Teknisi paling jujur, selalu edukasi pelanggan. Klien terbesar UPN Veteran Yogyakarta.", submitter: "@javafoodie_", type: "Konsumen" },
+  { id: 24, name: "CV H_SUN Air Conditioner", phone: "6281331322233",
+    areas: ["Gresik"],
+    testimoni: "Tim dibagi beberapa pasang, semua amanah dan on-time. Transparan soal harga dengan nota detail.", submitter: "@leonyvira", type: "Konsumen" },
+  { id: 25, name: "Rico", phone: "62895384261214",
+    areas: ["Bekasi", "Jakarta Timur"],
+    testimoni: "Biaya transparan, selalu konfirmasi sebelum melakukan tindakan.", submitter: "@misil_cinta", type: "Konsumen" },
+  { id: 26, name: "Maego (Senkyo Technic)", phone: "6287776198877",
+    areas: ["Jakarta"],
+    testimoni: "Pengalaman 20 tahun di dunia AC, pernah menangani Primajasa dan Cardig Group.", submitter: "@LocalOnichan", type: "Penyedia Jasa" },
+  { id: 27, name: "Widi Sukamtono (Kamto)", phone: "6285649521555",
+    areas: ["Pandaan", "Lawang", "Malang"],
+    testimoni: "Jujur, harga servis sangat terjangkau.", submitter: "rielmana", type: "Konsumen" },
+  { id: 28, name: "CV Arinda Makmur Teknik", phone: "6289618527079",
+    areas: ["Cileungsi", "Cibubur"],
+    testimoni: "Jujur dan amanah.", submitter: "@ardiansyah", type: "Konsumen" },
+  { id: 29, name: "Samsul", phone: "6282257479353",
+    areas: ["Malang"],
+    testimoni: "Mengedukasi pelanggan soal jenis-jenis freon AC.", submitter: "@cocotomatete", type: "Konsumen" },
+  { id: 30, name: "Menara AC (Bp. Diduk Arifin)", phone: "6285247302154",
+    areas: ["Berau", "Kalimantan Timur"],
+    testimoni: "Kerja rapi, harga wajar, selalu edukasi cara perawatan AC.", submitter: "@bro_danang", type: "Konsumen" },
+  { id: 31, name: "Basuki", phone: "6281212366299",
+    areas: ["Pamulang"],
+    testimoni: "Komunikatif dan memahami teknis AC dengan baik.", submitter: "@muhatm", type: "Konsumen" },
+  { id: 32, name: "Mas Rohman", phone: "6281231211863",
+    areas: ["Surabaya", "Sidoarjo", "Gresik"],
+    testimoni: "Totalitas dan profesional.", submitter: "@bricko_ferdi", type: "Konsumen" },
+  { id: 33, name: "Haryo Purnomo", phone: "62881024107424",
+    areas: ["Pamulang", "Ciputat", "Tangerang", "BSD", "seluruh Tangerang Selatan"],
+    testimoni: "Sangat solutif, selalu jelaskan akar masalah tanpa buru-buru isi freon. Perlu booking dari jauh hari.", submitter: "@yogipambudi", type: "Konsumen" },
+  { id: 34, name: "Rizky", phone: "6289666425388",
+    areas: ["Jakarta Pusat", "Jakarta Timur", "Jakarta Utara", "Bekasi", "Depok"],
+    testimoni: "Jujur, cekatan, tidak ada biaya tersembunyi.", submitter: "@areloghy", type: "Konsumen" },
+  { id: 35, name: "PT Chochep Teknik Indonesia (Udara Sejuk)", phone: "6282114132200",
+    areas: ["DKI Jakarta"],
+    testimoni: "Didukung teknisi berpengalaman dan peralatan standar nasional, melayani rumah hingga kawasan industri.", submitter: "@tidakpunyatwitter", type: "Penyedia Jasa" },
+  { id: 36, name: "Black Box AC Semarang", phone: "6285959098899",
+    areas: ["Semarang"],
+    testimoni: "Profesional dan tepat waktu, menjelaskan penyebab masalah AC secara detail.", submitter: "@febdypw", type: "Konsumen" },
+  { id: 37, name: "Adnan Fauzi", phone: "6281213546699",
+    areas: ["Rawamangun", "Pulogadung", "Cempaka Putih", "Kelapa Gading"],
+    testimoni: "Teknisi apartemen, juga bisa instalasi listrik dan MEP, tidak membawa tabung freon kemana-mana.", submitter: "@adnanss_", type: "Penyedia Jasa" },
+  { id: 38, name: "Pro Tehnik", phone: "6285892038615",
+    areas: ["Jakarta Selatan"],
+    testimoni: "Fast response, teknisi detail dan menjelaskan dengan bahasa mudah dimengerti.", submitter: "@ajialfian", type: "Konsumen" },
+  { id: 39, name: "H_Sun AC PPS", phone: "6281331322233",
+    areas: ["Gresik"],
+    testimoni: "Tetap buka hari Minggu, admin komunikatif menjawab pertanyaan.", submitter: "@efaeride", type: "Konsumen" },
+  { id: 40, name: "KSS AC Solutions", phone: "6281311235740",
+    areas: ["Depok"],
+    testimoni: "Sangat jujur, semangat mengedukasi pelanggan tinggi.", submitter: "@pundingin", type: "Konsumen" },
+  { id: 41, name: "PT Alfian Teknik Mandiri", phone: "628567506961",
+    areas: ["Bekasi", "Tambun", "Cikarang", "Cibitung"],
+    testimoni: "SOP penanganan AC jelas, selalu tes tekanan freon dulu sebelum isi ulang.", submitter: "@letmelove09", type: "Konsumen" },
+  { id: 42, name: "Sulistijanto Manik Mandiri", phone: "62816745974",
+    areas: ["Tangerang", "Tangerang Selatan", "Jakarta Barat"],
+    testimoni: "Lebih dari 20 tahun jadi ahli AC, selalu edukasi bahwa freon tidak berkurang jika tidak bocor.", submitter: "@sn6v_", type: "Penyedia Jasa" },
+  { id: 43, name: "Ferry", phone: "6282114873699",
+    areas: ["DKI Jakarta"],
+    testimoni: "Kerjanya cepat, rapi dan bersih, alat lengkap. Selalu jadi andalan untuk maintenance AC.", submitter: "@leohardenberg", type: "Konsumen" },
+  { id: 44, name: "Bahtera AC (cabang Pancoran Riverside)", phone: "628119109692",
+    areas: ["Jakarta Selatan"],
+    testimoni: "3 tahun pakai jasanya, tidak pernah kecewa.", submitter: "Supersapi", type: "Konsumen" },
+  { id: 45, name: "Citra Tekindo", phone: "6285219385339",
+    areas: ["Tangerang Kabupaten"],
+    testimoni: "Menyelesaikan perbaikan AC tanpa banyak belit-belit.", submitter: "bayusmdro", type: "Konsumen" },
+  { id: 46, name: "Riyanto", phone: "6281285817799",
+    areas: ["Bekasi", "Cikarang", "Cibarusah", "Cibitung", "Setu"],
+    testimoni: "Jujur, amanah, ulet, paham kondisi semua jenis AC.", submitter: "@doneAMP", type: "Konsumen" },
+  { id: 47, name: "Haris (Rawalumbu Bektim)", phone: "6281513413867",
+    areas: ["Jabodetabek"],
+    testimoni: "Berilmu, rajin update ilmu lewat sertifikasi. Kerjaan rapi, harga pantas.", submitter: "@ahadiyats", type: "Konsumen" },
+  { id: 48, name: "Pak Agus Triadi", phone: "62818743929",
+    areas: ["DKI Jakarta", "Tangerang"],
+    testimoni: "Background ahli kelistrikan, paham betul seluk-beluk komponen AC.", submitter: "@bayufh", type: "Konsumen" },
+  { id: 49, name: "Amat", phone: "6282210073355",
+    areas: ["Depok & Bogor"],
+    testimoni: "Jujur, kerja bagus dan rapi.", submitter: "@rakhmat_haikal", type: "Konsumen" },
+  { id: 50, name: "Eko Marsoni", phone: "6287772943211",
+    areas: ["Jakarta Barat", "Tangerang", "Tenjo"],
+    testimoni: "Direkomendasikan warganet di area Jakarta Barat.", submitter: "@naila0125", type: "Konsumen" },
+  { id: 51, name: "CV Berkah Tehnik Jogja", phone: "6281548383100",
+    areas: ["Jogja", "Purworejo"],
+    testimoni: "Teknisi bersertifikasi, berpegang teguh amanah dalam segala keadaan.", submitter: "@knkmocchi", type: "Konsumen" },
+  { id: 52, name: "Lazuardi Perkasa", phone: "6289690362430",
+    areas: ["Kota Bandung", "Cibeunying Kidul"],
+    testimoni: "Insyaallah amanah, paham betul cara bikin ruangan adem.", submitter: "@selaksaa", type: "Penyedia Jasa" },
+  { id: 53, name: "Hasbullah", phone: "6281383539152",
+    areas: ["Jakarta Timur", "Ciracas", "Cijantung", "Pasar Rebo", "Kramat Jati"],
+    testimoni: "10 tahun menangani AC mall sebelum buka usaha sendiri. Kerja rapi, efisien, analisa masalah tepat.", submitter: "@natimporten", type: "Konsumen" },
+  { id: 54, name: "Pak Uut / Pak Tomo", phone: "628129286938",
+    areas: ["Jakarta", "Depok", "Bogor"],
+    testimoni: "Satu-satunya tukang AC yang memberi edukasi detail soal per-AC-an.", submitter: "@hericopterr", type: "Konsumen" },
+  { id: 55, name: "Hafama AC", phone: "6289535981505",
+    areas: ["Bekasi", "Tambun", "Cibitung"],
+    testimoni: "Pengerjaan rapi, informatif, tidak pelit ilmu, ramah dan sopan.", submitter: "@sarahma2907", type: "Konsumen" },
+  { id: 56, name: "Dudin Rahman", phone: "6281214200552",
+    areas: ["Bandung Area"],
+    testimoni: "Jujur dan ramah, pengalaman jadi teknisi AC di luar negeri, harga sangat bersahabat.", submitter: "@ibuibuberdaster", type: "Konsumen" },
+  { id: 57, name: "Hartoyo", phone: "6282213135162",
+    areas: ["Cikarang Selatan"],
+    testimoni: "Jujur, tidak pernah suruh isi freon, bagikan ilmu memilih AC dan pipa.", submitter: "@adridarrr", type: "Konsumen" },
+  { id: 58, name: "Bapak Yunus", phone: "6281285971439",
+    areas: ["Kota Bekasi", "Jakarta Timur"],
+    testimoni: "Jujur dalam memberi pelayanan, mengedukasi cara mencuci AC indoor sendiri.", submitter: "@lailyputrii", type: "Konsumen" },
+  { id: 59, name: "Supriatno", phone: "628129741464",
+    areas: ["Jakarta Selatan", "Jakarta Timur"],
+    testimoni: "Sekali servis AC langsung dingin lagi.", submitter: "@inoe_nyo", type: "Konsumen" },
+  { id: 60, name: "Hikmat AC", phone: "6287805351109",
+    areas: ["Purwakarta"],
+    testimoni: "Jujur, siap membantu sampai konsumen puas dengan hasil kerja.", submitter: "@wadad", type: "Penyedia Jasa" },
+  { id: 61, name: "Dedi AC", phone: "6281266319709",
+    areas: ["Kota Bukittinggi", "Sumatra Barat"],
+    testimoni: "Lebih dari 25 tahun membuka jasa AC sendiri, edukatif, jujur, dan ramah.", submitter: "@karinawifeyy", type: "Penyedia Jasa" },
+  { id: 62, name: "dRAc", phone: "6289532043538",
+    areas: ["Kota Tangerang", "Kabupaten Tangerang"],
+    testimoni: "Slogan mereka: amanah, ramah, dan profesional.", submitter: "@deri_r", type: "Penyedia Jasa" },
+  { id: 63, name: "Global AC", phone: "62811516770",
+    areas: ["Banjarmasin"],
+    testimoni: "Profesional, tepat waktu, bergaransi.", submitter: "@adit_topak", type: "Konsumen" },
+  { id: 64, name: "Aris", phone: "6285710574779",
+    areas: ["DKI Jakarta", "sebagian Tangerang"],
+    testimoni: "Cepat, jujur, transparan.", submitter: "@renggalism", type: "Konsumen" },
+  { id: 65, name: "Jaya Elektrindo", phone: "6285212231306",
+    areas: ["Bekasi Kota", "Jl. Kartini dan sekitarnya", "Tambun Selatan"],
+    testimoni: "Resmi khusus Daikin dan Gree, alat lengkap, teknisi jujur dan bersih setelah kerja.", submitter: "@zkyjr_", type: "Konsumen" },
+  { id: 66, name: "Nanda Teknik", phone: "6285320733833",
+    areas: ["Majalengka", "Cirebon"],
+    testimoni: "Layanan pure cuci AC, tidak bermain-main dengan freon.", submitter: "@archelioxean", type: "Penyedia Jasa" },
+  { id: 67, name: "Supriyatno (Mas No)", phone: "6287771242843",
+    areas: ["Kota & Kab. Serang", "Cilegon", "Tangerang", "Pandeglang", "Rangkasbitung"],
+    testimoni: "Tahu betul kondisi AC, jujur, selalu diskusi dulu sebelum ada tindakan.", submitter: "@ang__firdausy", type: "Konsumen" },
+  { id: 68, name: "Hammam", phone: "6282332496006",
+    areas: ["Sukmajaya", "Depok"],
+    testimoni: "Transparan dan jujur.", submitter: "@hammam0998", type: "Penyedia Jasa" },
+  { id: 69, name: "Dian AC Terboyo", phone: "6287722416918",
+    areas: ["Kota & Kab. Pekalongan", "Kab. Batang"],
+    testimoni: "Mengedukasi bahwa freon tidak perlu diganti kalau tidak bocor.", submitter: "fairuz_azamie", type: "Konsumen" },
+  { id: 70, name: "Sabarudin", phone: "6285100067436",
+    areas: ["Jakarta Barat"],
+    testimoni: "Tepat waktu, kerjaan cepat dan rapi, sopan dan ramah.", submitter: "mamalembot", type: "Konsumen" },
+  { id: 71, name: "Papandayan AC", phone: "6281932666632",
+    areas: ["Bogor"],
+    testimoni: "Semua diperiksa dulu, tidak memaksakan jasa yang tidak diperlukan.", submitter: "mamalembot", type: "Konsumen" },
+  { id: 72, name: "KlinikAC Bandung", phone: "6285721112000",
+    areas: ["Bandung Raya"],
+    testimoni: "Langganan sejak 2019, tidak pernah ada kata tambah freon. Teknisi berlatar pendidikan refrigerasi.", submitter: "@silahkanjalan", type: "Konsumen" },
+  { id: 73, name: "Rochim", phone: "6281210128333",
+    areas: ["Jakarta Timur", "Bekasi", "Jakarta Selatan"],
+    testimoni: "Lebih dari 20 tahun pengalaman, ada garansi pengerjaan, ramah dan enak diajak konsultasi.", submitter: "Pdjselena", type: "Konsumen" },
+  { id: 74, name: "Pak Ahyar", phone: "628121399140",
+    areas: ["Bekasi", "Jakarta Timur"],
+    testimoni: "Pekerjaan rapi, harga wajar, cekatan. Langganan banyak warga sekitar.", submitter: "Wibisono68778981", type: "Konsumen" },
+  { id: 75, name: "Goman / Herman", phone: "6282114063903",
+    areas: ["Jakarta"],
+    testimoni: "Mengedukasi bahwa freon tidak akan habis kecuali bocor.", submitter: "@coretanditoilet", type: "Konsumen" },
+  { id: 76, name: "Mas Nadip", phone: "6287874806496",
+    areas: ["Sidoarjo", "Surabaya"],
+    testimoni: "Jujur, cekatan, diskusi selalu terbuka soal penanganan AC.", submitter: "@974a1e7e5e8d445", type: "Konsumen" },
+  { id: 77, name: "Leo Pramesto", phone: "6285921411035",
+    areas: ["Tangerang", "Gading Serpong"],
+    testimoni: "Profesional dan bertanggung jawab, ada harga ada jasa.", submitter: "@kocaklukocak", type: "Konsumen" },
+  { id: 78, name: "Akwil", phone: "62881023274536",
+    areas: ["Jakarta Utara"],
+    testimoni: "Jujur, amanah, rapi.", submitter: "Abdlmalik234", type: "Penyedia Jasa" },
+  { id: 79, name: "Andri", phone: "6285711184623",
+    areas: ["Jakarta"],
+    testimoni: "Pokoknya amanah.", submitter: "@andrycurva", type: "Penyedia Jasa" },
+  { id: 80, name: "Supriyono (PT Kinesia Prima Teknik)", phone: "6285218434433",
+    areas: ["Bogor", "Depok", "Jakarta", "Tangerang"],
+    testimoni: "Edukasi lengkap soal produk, ada garansi pribadi, berpengalaman lebih dari 10 tahun.", submitter: "@numpanglewatcuk", type: "Penyedia Jasa" },
+  { id: 81, name: "Toko Sinar Pendingin", phone: "62817757323",
+    areas: ["Jabodetabek"],
+    testimoni: "Langganan 3 tahun, teknisi ramah dan mau menjelaskan banyak hal soal AC.", submitter: "cak_faris", type: "Konsumen" },
+  { id: 82, name: "PT Nusaiba Amerta Teknik", phone: "6282125767626",
+    areas: ["Jakarta Timur", "Jakarta Pusat", "Jakarta Selatan"],
+    testimoni: "Harga kompetitif, tim profesional di bidangnya.", submitter: "@widadwidid", type: "Penyedia Jasa" },
+  { id: 83, name: "Ahmad Sobari", phone: "6285885120049",
+    areas: ["Tangerang Selatan"],
+    testimoni: "Jujur, ramah dan amanah, bisa kerjakan selain AC juga.", submitter: "@jasminehilman", type: "Konsumen" },
+  { id: 84, name: "Iwan Setyawan (Amanah Teknik)", phone: "6287886537910",
+    areas: ["Cikarang", "Cikarang Selatan", "Cibarusah", "Bekasi"],
+    testimoni: "Tarif sesuai jenis pekerjaan, tidak dimahalin, pekerjaan rapi.", submitter: "@sandboxmentor", type: "Konsumen" },
+  { id: 85, name: "Sendang Mandiri AC (Ibu Isto)", phone: "62895631679800",
+    areas: ["Kota Tarakan"],
+    testimoni: "Bersih, jujur, telaten, sopan dan cepat.", submitter: "zenmuhd", type: "Konsumen" },
+  { id: 86, name: "YY Jaya Bersama", phone: "62811667316",
+    areas: ["Padang Kota"],
+    testimoni: "Direkomendasikan warganet di area Padang.", submitter: "Yovanaliantoni", type: "Penyedia Jasa" },
+  { id: 87, name: "Pak Susanto (Central Electronic)", phone: "6282328868652",
+    areas: ["Semarang", "khususnya Tanahmas"],
+    testimoni: "Puluhan tahun jadi penyedia jasa service AC, paham mendalam cara kerja tiap merek AC.", submitter: "@v_samaya", type: "Penyedia Jasa" },
+  { id: 88, name: "Pak Bambang", phone: "628179138109",
+    areas: ["Jakarta Timur", "pinggiran Jaksel", "Bekasi Selatan", "Barat", "Utara"],
+    testimoni: "Bisa cuci, lepas-pasang, dan service AC. Jujur meski antriannya panjang.", submitter: "@vwidyan", type: "Konsumen" },
+  { id: 89, name: "Gayeng Teknik AC & Las", phone: "6289604267954",
+    areas: ["Semarang"],
+    testimoni: "Alat lengkap, ramah dan jujur. Berhasil memperbaiki AC yang sebelumnya salah didiagnosis.", submitter: "@gazettier", type: "Konsumen" },
+];
+
+
+/* =========================================================================
+   Data — dulu localStorage (dengan key yang sama antara index/admin/teknisi
+   ini), sekarang Firestore. Cache lokal di-refresh lewat reload*() setiap
+   kali ada perubahan, supaya kode render di bawah bisa tetap membaca lewat
+   fungsi get*() secara sinkron seperti sebelumnya.
+   ========================================================================= */
+const SESSION_KEY = "teknisiku_tech_session";
+
+let _customTechsCache = [];
+let _ordersCache = [];
+let _teamCache = [];
+let _reviewsCache = [];
+let _availabilityCache = []; // { id: "techId_YYYY-MM-DD", techId, date, status: "almost_full"|"full" }
+let _paymentInfo = null;     // { bankName, accountNumber, accountName, footerNote } milik currentTech
+
+async function reloadCustomTechs(){ _customTechsCache = await fetchAll("custom_technicians"); }
+async function reloadOrders(){ _ordersCache = await fetchAll("orders"); }
+async function reloadTeam(){ _teamCache = await fetchAll("team_members"); }
+async function reloadReviews(){ _reviewsCache = await fetchAll("pending_reviews"); }
+async function reloadAvailability(){ _availabilityCache = await fetchAll("availability"); }
+async function reloadPaymentInfo(){
+  const all = await fetchAll("tech_payment");
+  _paymentInfo = all.find(p => p.id === String(currentTech.id)) || null;
+}
+
+function getAllTechnicians(){
+  return [...BUILTIN_TECHNICIANS, ..._customTechsCache];
+}
+function getOrders(){
+  return _ordersCache;
+}
+function getTeam(techId){
+  return _teamCache.filter(m => m.techId === techId);
+}
+function getReviews(techId){
+  return _reviewsCache.filter(r => r.techId === techId);
+}
+
+/* Ketersediaan tanggal — teknisi bisa menandai suatu tanggal "Hampir Penuh"
+   atau "Full Booked" supaya kelihatan di kalender, terpisah dari jumlah
+   order yang sudah ada di tanggal itu. */
+function getAvailabilityMap(techId){
+  const map = {};
+  _availabilityCache.filter(a => a.techId === techId).forEach(a => { map[a.date] = a.status; });
+  return map;
+}
+async function setAvailability(date, status){
+  const id = `${currentTech.id}_${date}`;
+  if (status === "normal"){
+    await removeById("availability", id);
+  }else{
+    await setById("availability", id, { techId: currentTech.id, date, status });
+  }
+  await reloadAvailability();
+  renderCalendar();
+}
+
+/* ====== PIN teknisi — disimpan di Firestore sebagai field "pin" pada
+   dokumen teknisi custom (koleksi custom_technicians). Untuk teknisi
+   BAWAAN (BUILTIN_TECHNICIANS, id kecil), PIN custom disimpan di koleksi
+   terpisah "tech_pins" karena teknisi bawaan bukan dokumen Firestore. ====== */
+let _techPinsCache = {}; // { [techId]: pin }
+async function reloadTechPins(){
+  const docs = await fetchAll("tech_pins");
+  _techPinsCache = {};
+  docs.forEach(d => { _techPinsCache[d.id] = d.pin; });
+}
+function getCustomPin(techId){
+  return _techPinsCache[techId] || null;
+}
+async function setCustomPin(techId, pin){
+  await setById("tech_pins", techId, { pin });
+  _techPinsCache[techId] = pin;
+}
+function getActivePin(tech){
+  // Kalau ada PIN custom, pakai itu. Kalau belum pernah diganti, fallback
+  // ke 4 digit terakhir nomor HP teknisi.
+  const custom = getCustomPin(tech.id);
+  if (custom) return custom;
+  return String(tech.phone || "").slice(-4);
+}
+
+/* =========================================================================
+   Login
+   ========================================================================= */
+let pickedTech = null;
+let currentTech = null;
+
+function normalizeSearch(s){ return s.toLowerCase().trim(); }
+
+$("#techSearchInput").addEventListener("input", (e) => {
+  const q = normalizeSearch(e.target.value);
+  const results = $("#techSearchResults");
+  if (!q){ results.classList.add("hidden"); results.innerHTML = ""; return; }
+  const matches = getAllTechnicians().filter(t => t.name.toLowerCase().includes(q)).slice(0, 8);
+  if (!matches.length){
+    results.innerHTML = `<div class="tech-search-row" style="cursor:default; color:var(--ink-faint);">Tidak ditemukan</div>`;
+  }else{
+    results.innerHTML = matches.map(t => `<div class="tech-search-row" data-pick="${t.id}">${escapeHtml(t.name)}</div>`).join("");
+    results.querySelectorAll("[data-pick]").forEach(row => {
+      row.addEventListener("click", () => pickTech(Number(row.dataset.pick)));
+    });
+  }
+  results.classList.remove("hidden");
+});
+
+function pickTech(id){
+  const tech = getAllTechnicians().find(t => t.id === id);
+  if (!tech) return;
+  pickedTech = tech;
+  $("#pickedTechName").textContent = tech.name;
+  $("#searchStep").classList.add("hidden");
+  $("#pickedStep").classList.remove("hidden");
+  $("#loginError").textContent = "";
+  $("#pinInput").value = "";
+  $("#pinInput").focus();
+}
+
+$("#changePickedBtn").addEventListener("click", () => {
+  pickedTech = null;
+  $("#pickedStep").classList.add("hidden");
+  $("#searchStep").classList.remove("hidden");
+  $("#techSearchInput").value = "";
+  $("#techSearchResults").classList.add("hidden");
+  $("#techSearchInput").focus();
+});
+
+/* ====== MODIFIED (minimal): tryLogin now uses getActivePin() ====== */
+function tryLogin(){
+  if (!pickedTech) return;
+  const pin = $("#pinInput").value.trim();
+  const expected = getActivePin(pickedTech);
+  if (pin !== expected){
+    $("#loginError").textContent = "PIN tidak cocok. Coba lagi.";
+    return;
+  }
+  sessionStorage.setItem(SESSION_KEY, String(pickedTech.id));
+  enterDashboard(pickedTech.id);
+}
+/* ====== END MODIFIED ====== */
+$("#loginBtn").addEventListener("click", tryLogin);
+$("#pinInput").addEventListener("keydown", (e) => { if (e.key === "Enter") tryLogin(); });
+$("#logoutBtn").addEventListener("click", () => {
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+});
+
+async function enterDashboard(techId){
+  currentTech = getAllTechnicians().find(t => t.id === techId);
+  if (!currentTech){
+    $("#loginError").textContent = "Akun teknisi tidak ditemukan lagi.";
+    return;
+  }
+  $("#loginScreen").classList.add("hidden");
+  $("#dashboard").classList.remove("hidden");
+  $("#techBadgeName").textContent = currentTech.name;
+  try{
+    await Promise.all([reloadOrders(), reloadTeam(), reloadReviews(), reloadAvailability(), reloadPaymentInfo()]);
+  }catch(err){
+    console.error("[enterDashboard] gagal memuat data Firestore, lanjut dengan data kosong:", err);
+  }
+  refreshAll();
+}
+
+/* =========================================================================
+   Tabs
+   ========================================================================= */
+$$(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    $$(".tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const tab = btn.dataset.tab;
+    $("#tab-orders").classList.toggle("hidden", tab !== "orders");
+    $("#tab-team").classList.toggle("hidden", tab !== "team");
+    $("#tab-reviews").classList.toggle("hidden", tab !== "reviews");
+    if (tab === "team") renderTeam();
+    if (tab === "reviews") renderReviews();
+  });
+});
+
+/* =========================================================================
+   Orders
+   ========================================================================= */
+let orderFilter = "all";
+let selectedDate = null; // "YYYY-MM-DD"
+let calMonth = new Date().getMonth();
+let calYear = new Date().getFullYear();
+
+$$("[data-ofilter]").forEach(chip => {
+  chip.addEventListener("click", () => {
+    $$("[data-ofilter]").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    orderFilter = chip.dataset.ofilter;
+    renderOrders();
+  });
+});
+
+$("#calToggle").addEventListener("click", () => {
+  const panel = $("#calPanel");
+  panel.classList.toggle("hidden");
+  if (!panel.classList.contains("hidden")) renderCalendar();
+});
+$("#calPrev").addEventListener("click", () => { calMonth--; if (calMonth < 0){ calMonth = 11; calYear--; } renderCalendar(); });
+$("#calNext").addEventListener("click", () => { calMonth++; if (calMonth > 11){ calMonth = 0; calYear++; } renderCalendar(); });
+$("#calClear").addEventListener("click", () => {
+  selectedDate = null;
+  $("#calToggle").classList.remove("active");
+  $("#calToggle").textContent = "📅 Filter Tanggal";
+  $("#calPanel").classList.add("hidden");   // ← DITAMBAHKAN: tutup panel kalender
+  renderCalendar();
+  renderOrders();
+});
+
+function myOrders(){
+  return getOrders().filter(o => o.techId === currentTech.id).sort((a,b) => new Date(b.ts) - new Date(a.ts));
+}
+
+function renderCalendar(){
+  const months = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+  const dows = ["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
+  $("#calLabel").textContent = `${months[calMonth]} ${calYear}`;
+
+  const counts = {};
+  myOrders().forEach(o => {
+    if (o.status === "cancelled") return;
+    counts[o.tanggal] = (counts[o.tanggal] || 0) + 1;
+  });
+  const availMap = getAvailabilityMap(currentTech.id);
+
+  const firstDow = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  let html = dows.map(d => `<div class="cal-dow">${d}</div>`).join("");
+  for (let i = 0; i < firstDow; i++) html += `<div class="cal-day other"></div>`;
+  for (let d = 1; d <= daysInMonth; d++){
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const isToday = dateStr === todayStr;
+    const isSel = dateStr === selectedDate;
+    const count = counts[dateStr] || 0;
+    const avail = availMap[dateStr]; // undefined | "almost_full" | "full"
+    const availClass = avail === "full" ? " full-booked" : avail === "almost_full" ? " almost-full" : "";
+    html += `<div class="cal-day${isToday ? " today" : ""}${isSel ? " selected" : ""}${availClass}" data-date="${dateStr}">${d}${count ? '<span class="dot"></span>' : ""}</div>`;
+  }
+  $("#calGrid").innerHTML = html;
+  $("#calGrid").querySelectorAll("[data-date]").forEach(cell => {
+  cell.addEventListener("click", () => {
+    const d = cell.dataset.date;
+    selectedDate = selectedDate === d ? null : d;
+    if (selectedDate){
+      const fmt = new Date(selectedDate + "T00:00:00").toLocaleDateString("id-ID", { day:"numeric", month:"short" });
+      $("#calToggle").textContent = `📅 ${fmt}`;
+      $("#calToggle").classList.add("active");
+    } else {
+      $("#calToggle").textContent = "📅 Filter Tanggal";
+      $("#calPanel").classList.add("hidden");  // ← Kamu menambahkan ini di sini
+    }
+    renderCalendar();
+    renderOrders();
+  });
+});;
+
+  // Baris tandai ketersediaan — cuma muncul kalau ada tanggal yang dipilih.
+  const availWrap = $("#availActions");
+  if (!selectedDate){
+    availWrap.innerHTML = "";
+  }else{
+    const current = availMap[selectedDate] || "normal";
+    const options = [
+      { key: "normal", label: "Normal" },
+      { key: "almost_full", label: "🟡 Hampir Penuh" },
+      { key: "full", label: "🔴 Full Booked" },
+    ];
+    availWrap.innerHTML = `
+      <div class="avail-label">Tandai ketersediaan tanggal ini:</div>
+      <div class="avail-btn-row">
+        ${options.map(o => `
+          <button type="button" class="avail-btn ${o.key === current ? "active" : ""}" data-avail="${o.key}">${o.label}</button>
+        `).join("")}
+      </div>
+    `;
+    availWrap.querySelectorAll("[data-avail]").forEach(btn => {
+      btn.addEventListener("click", () => setAvailability(selectedDate, btn.dataset.avail));
+    });
+  }
+}
+
+const dateFmtID = new Intl.DateTimeFormat("id-ID", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+const STATUS_LABEL = { pending:"Menunggu", confirmed:"Dikonfirmasi", done:"Selesai", cancelled:"Dibatalkan" };
+function formatRupiah(n){
+  return "Rp " + Math.round(Number(n) || 0).toLocaleString("id-ID");
+}
+
+function renderOrders(){
+  let list = myOrders();
+  if (orderFilter !== "all") list = list.filter(o => o.status === orderFilter);
+  if (selectedDate) list = list.filter(o => o.tanggal === selectedDate);
+
+  const wrap = $("#orderList");
+  const empty = $("#orderEmpty");
+  if (!list.length){
+    wrap.innerHTML = "";
+    empty.classList.remove("hidden");
+    return;
+  }
+  empty.classList.add("hidden");
+
+  wrap.innerHTML = list.map(o => `
+    <div class="order-card" data-order="${o.id}">
+      <div class="order-top">
+        <div>
+          <div class="order-customer">${escapeHtml(o.namaPemesan || "-")}</div>
+          <div class="order-phone">${escapeHtml(o.hpPemesan || "-")}</div>
+          <span class="status-pill ${o.status}">${STATUS_LABEL[o.status] || o.status}</span>
+        </div>
+        <div class="order-id">${o.id}<br/>${new Date(o.ts).toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"})}</div>
+      </div>
+      <div class="order-row"><b>Tanggal</b><span>${o.tanggal ? dateFmtID.format(new Date(o.tanggal + "T00:00:00")) : "-"}</span></div>
+      <div class="order-row"><b>Alamat</b><span>${escapeHtml(o.alamat || "-")}</span></div>
+      <div class="order-services">
+        ${(o.services || []).map(s => `<div>• ${escapeHtml(s.name)} x${s.qty}</div>`).join("")}
+      </div>
+      ${o.catatan ? `<div class="order-row"><b>Catatan</b><span>${escapeHtml(o.catatan)}</span></div>` : ""}
+      ${o.assignedTo ? `<div class="assigned-tag">🎫 Ditugaskan ke ${escapeHtml(o.assignedTo)}</div>` : ""}
+      ${o.invoice ? `<div class="assigned-tag" style="background:#E8F5E9; color:#2E7D32;">🧾 Invoice: ${formatRupiah(o.invoice.total)}</div>` : ""}
+      <div class="order-actions">
+        <select data-status-select="${o.id}">
+          ${["pending","confirmed","done","cancelled"].map(s => `<option value="${s}" ${s===o.status?"selected":""}>${STATUS_LABEL[s]}</option>`).join("")}
+        </select>
+        <button class="btn-assign" data-assign="${o.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+          ${o.assignedTo ? "Cetak Ulang Kartu" : "Assign & Cetak Kartu"}
+        </button>
+        <button class="btn-invoice" data-invoice="${o.id}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+          ${o.invoice ? "Cetak Ulang Invoice" : "Cetak Invoice"}
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  wrap.querySelectorAll("[data-status-select]").forEach(sel => {
+    sel.addEventListener("change", async () => {
+      const id = sel.dataset.statusSelect;
+      await updateById("orders", id, { status: sel.value });
+      await reloadOrders();
+      showToast("Status pesanan diperbarui");
+      renderStats();
+      renderOrders();
+      renderCalendar();
+    });
+  });
+  wrap.querySelectorAll("[data-assign]").forEach(btn => {
+    btn.addEventListener("click", () => openAssignModal(btn.dataset.assign));
+  });
+  wrap.querySelectorAll("[data-invoice]").forEach(btn => {
+    btn.addEventListener("click", () => openInvoiceModal(btn.dataset.invoice));
+  });
+}
+
+function renderStats(){
+  const list = myOrders();
+  $("#statTotal").textContent = list.length;
+  $("#statPending").textContent = list.filter(o => o.status === "pending").length;
+  $("#statConfirmed").textContent = list.filter(o => o.status === "confirmed").length;
+  $("#statDone").textContent = list.filter(o => o.status === "done").length;
+}
+
+/* =========================================================================
+   Assign modal + order-card PDF export
+   ========================================================================= */
+let assignOrderId = null;
+
+function openAssignModal(orderId){
+  assignOrderId = orderId;
+  const team = getTeam(currentTech.id);
+  const select = $("#assignMemberSelect");
+  if (!team.length){
+    select.innerHTML = `<option value="">Belum ada anggota tim — tambah dulu di tab "Tim Saya"</option>`;
+  }else{
+    select.innerHTML = team.map(m => `<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)}</option>`).join("");
+  }
+  $("#assignModal").classList.remove("hidden");
+}
+$("#assignCancel").addEventListener("click", () => $("#assignModal").classList.add("hidden"));
+
+$("#assignConfirm").addEventListener("click", async () => {
+  const memberName = $("#assignMemberSelect").value;
+  if (!memberName){ showToast("Tambahkan anggota tim dulu ya"); return; }
+
+  const all = getOrders();
+  const idx = all.findIndex(o => o.id === assignOrderId);
+  if (idx === -1) return;
+  const patch = { assignedTo: memberName };
+  if (all[idx].status === "pending") patch.status = "confirmed";
+  await updateById("orders", assignOrderId, patch);
+  await reloadOrders();
+  const updatedOrder = getOrders().find(o => o.id === assignOrderId);
+
+  const btn = $("#assignConfirm");
+  btn.disabled = true;
+  btn.querySelector("span").textContent = "Membuat kartu...";
+  try{
+    await downloadOrderCard(updatedOrder);
+    showToast(`Kartu order berhasil diunduh & di-assign ke ${memberName} ✅`);
+  }catch(e){
+    console.error(e);
+    showToast("Gagal membuat kartu, coba lagi ya");
+  }
+  btn.disabled = false;
+  btn.querySelector("span").textContent = "Assign & Download";
+  $("#assignModal").classList.add("hidden");
+  renderOrders();
+  renderStats();
+});
+
+/* =========================================================================
+   Ekspor kartu/invoice sebagai PDF (bukan JPG) — dipakai bareng oleh
+   downloadOrderCard() dan downloadInvoiceCard() di bawah. Ukuran halaman
+   PDF dibuat pas mengikuti tinggi kontennya (bukan dipotong ke A4), supaya
+   seluruh kartu selalu utuh dalam 1 halaman.
+   ========================================================================= */
+async function exportNodeAsPDF(node, filename){
+  const canvas = await html2canvas(node, { scale: 2, backgroundColor: "#FDFBF3" });
+  const imgData = canvas.toDataURL("image/jpeg", 0.95);
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({
+    orientation: canvas.width >= canvas.height ? "landscape" : "portrait",
+    unit: "px",
+    format: [canvas.width, canvas.height],
+  });
+  pdf.addImage(imgData, "JPEG", 0, 0, canvas.width, canvas.height);
+  pdf.save(filename);
+}
+
+async function downloadOrderCard(order){
+  const tpl = $("#orderCardTemplate");
+  tpl.innerHTML = `
+    <div class="card-print" id="cpInner">
+      <div class="cp-head">
+        <div>
+          <div class="cp-logo">❋ <b>Teknisiku</b></div>
+          <div class="cp-tag">Kartu Order Servis AC</div>
+        </div>
+        <div class="cp-id">${order.id}<br/>${new Date(order.ts).toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})}</div>
+      </div>
+
+      <div class="cp-section">
+        <div class="cp-label">Diterima oleh</div>
+        <div class="cp-value">${escapeHtml(order.techName)}</div>
+      </div>
+
+      <div class="cp-assigned">
+        <div>
+          <div class="cp-label" style="margin-bottom:2px;">Ditugaskan ke</div>
+          <div class="cp-value">${escapeHtml(order.assignedTo || "-")}</div>
+        </div>
+        <div style="font-size:1.6rem;">🎫</div>
+      </div>
+
+      <div class="cp-row cp-section">
+        <div>
+          <div class="cp-label">Nama Pemesan</div>
+          <div class="cp-value">${escapeHtml(order.namaPemesan || "-")}</div>
+        </div>
+        <div>
+          <div class="cp-label">No. HP/WA</div>
+          <div class="cp-value">${escapeHtml(order.hpPemesan || "-")}</div>
+        </div>
+      </div>
+
+      <div class="cp-section">
+        <div class="cp-label">Alamat</div>
+        <div class="cp-value" style="font-size:.92rem;">${escapeHtml(order.alamat || "-")}</div>
+      </div>
+
+      <div class="cp-section">
+        <div class="cp-label">Tanggal Servis</div>
+        <div class="cp-value">${order.tanggal ? dateFmtID.format(new Date(order.tanggal + "T00:00:00")) : "-"}</div>
+      </div>
+
+      <div class="cp-section">
+        <div class="cp-label">Layanan</div>
+        <div class="cp-services">
+          ${(order.services || []).map(s => `<div>• ${escapeHtml(s.name)} — ${s.qty}x</div>`).join("")}
+        </div>
+      </div>
+
+      ${order.catatan ? `
+      <div class="cp-section">
+        <div class="cp-label">Catatan</div>
+        <div class="cp-value" style="font-size:.9rem; font-weight:600;">${escapeHtml(order.catatan)}</div>
+      </div>` : ""}
+
+      <div class="cp-footer">Dicetak dari Teknisiku pada ${new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric", hour:"2-digit", minute:"2-digit"})}</div>
+    </div>
+  `;
+
+  const node = $("#cpInner");
+  await exportNodeAsPDF(node, `kartu-order-${order.id}.pdf`);
+  tpl.innerHTML = "";
+}
+
+/* =========================================================================
+   Menu titik tiga (Info Pembayaran / Ganti PIN / Keluar) — digabung jadi
+   satu dropdown supaya header tidak sempit/ketutupan di HP kecil.
+   ========================================================================= */
+$("#menuToggleBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  $("#menuDropdown").classList.toggle("hidden");
+});
+document.addEventListener("click", (e) => {
+  const dd = $("#menuDropdown");
+  if (!dd || dd.classList.contains("hidden")) return;
+  if (!dd.contains(e.target) && e.target.id !== "menuToggleBtn"){
+    dd.classList.add("hidden");
+  }
+});
+["paymentInfoBtn", "changePinBtn", "logoutBtn"].forEach(id => {
+  $("#" + id).addEventListener("click", () => $("#menuDropdown").classList.add("hidden"));
+});
+
+/* =========================================================================
+   Info Pembayaran — nama bank/no. rekening/nama pemilik, muncul otomatis
+   di invoice yang dicetak (lihat downloadInvoiceCard di bawah).
+   ========================================================================= */
+$("#paymentInfoBtn").addEventListener("click", () => {
+  $("#payBankName").value = (_paymentInfo && _paymentInfo.bankName) || "";
+  $("#payAccountNumber").value = (_paymentInfo && _paymentInfo.accountNumber) || "";
+  $("#payAccountName").value = (_paymentInfo && _paymentInfo.accountName) || "";
+  $("#payFooterNote").value = (_paymentInfo && _paymentInfo.footerNote) || "";
+  $("#paymentError").classList.add("hidden");
+  $("#paymentModal").classList.remove("hidden");
+});
+$("#paymentCancel").addEventListener("click", () => $("#paymentModal").classList.add("hidden"));
+$("#paymentModal").addEventListener("click", (e) => { if (e.target.id === "paymentModal") $("#paymentModal").classList.add("hidden"); });
+
+$("#paymentSave").addEventListener("click", async () => {
+  const bankName = $("#payBankName").value.trim();
+  const accountNumber = $("#payAccountNumber").value.trim();
+  const accountName = $("#payAccountName").value.trim();
+  const footerNote = $("#payFooterNote").value.trim();
+  const errEl = $("#paymentError");
+
+  if ((bankName || accountNumber || accountName) && (!bankName || !accountNumber || !accountName)){
+    errEl.textContent = "Nama bank, nomor rekening, dan nama pemilik harus diisi lengkap (atau dikosongkan semua)";
+    errEl.classList.remove("hidden");
+    return;
+  }
+
+  const btn = $("#paymentSave");
+  btn.disabled = true;
+  try{
+    await setById("tech_payment", currentTech.id, { bankName, accountNumber, accountName, footerNote });
+    await reloadPaymentInfo();
+    showToast("Info pembayaran tersimpan ✅");
+    $("#paymentModal").classList.add("hidden");
+  }catch(e){
+    console.error(e);
+    errEl.textContent = "Gagal menyimpan, coba lagi ya";
+    errEl.classList.remove("hidden");
+  }
+  btn.disabled = false;
+});
+
+/* =========================================================================
+   Invoice — harga per servis diisi manual oleh teknisi, total dihitung
+   otomatis. Disimpan ke field `invoice` pada dokumen order di Firestore
+   (jadi kalau dibuka lagi nanti, harga yang sudah diisi tidak hilang).
+   ========================================================================= */
+function parseRupiahInput(raw){
+  return Number(String(raw || "").replace(/[^0-9]/g, "")) || 0;
+}
+function recalcInvoiceTotal(){
+  const itemInputs = $$("#invoiceItemsWrap [data-invoice-price]");
+  const itemsTotal = itemInputs.reduce((sum, inp) => sum + parseRupiahInput(inp.value), 0);
+  const extra = parseRupiahInput($("#invoiceExtra").value);
+  $("#invoiceTotalPreview").textContent = formatRupiah(itemsTotal + extra);
+  return itemsTotal + extra;
+}
+
+let invoiceOrderId = null;
+
+function openInvoiceModal(orderId){
+  invoiceOrderId = orderId;
+  const order = getOrders().find(o => o.id === orderId);
+  if (!order) return;
+
+  const services = order.services || [];
+  const savedItems = (order.invoice && order.invoice.items) || [];
+  $("#invoiceModalSub").textContent = `Untuk pesanan ${escapeHtml(order.namaPemesan || "-")} — isi harga tiap servis, total dihitung otomatis.`;
+
+  $("#invoiceItemsWrap").innerHTML = services.map((s, i) => {
+    const saved = savedItems.find(it => it.name === s.name && it.qty === s.qty);
+    return `
+    <div class="invoice-item-row">
+      <div class="invoice-item-label">${escapeHtml(s.name)}<small>${s.qty}x</small></div>
+      <input type="text" inputmode="numeric" data-invoice-price data-name="${escapeHtml(s.name)}" data-qty="${s.qty}"
+        placeholder="0" value="${saved ? saved.price : ""}" />
+    </div>
+  `;}).join("") || `<p class="hint">Pesanan ini belum ada rincian servis.</p>`;
+
+  $("#invoiceExtra").value = (order.invoice && order.invoice.extra) || "";
+  $("#invoiceError").classList.add("hidden");
+  recalcInvoiceTotal();
+  $("#invoiceModal").classList.remove("hidden");
+}
+
+$("#invoiceModal").addEventListener("input", (e) => {
+  if (e.target.matches("[data-invoice-price]") || e.target.id === "invoiceExtra") recalcInvoiceTotal();
+});
+
+$("#invoiceCancel").addEventListener("click", () => $("#invoiceModal").classList.add("hidden"));
+
+$("#invoiceConfirm").addEventListener("click", async () => {
+  const order = getOrders().find(o => o.id === invoiceOrderId);
+  if (!order) return;
+  const errEl = $("#invoiceError");
+
+  const items = $$("#invoiceItemsWrap [data-invoice-price]").map(inp => ({
+    name: inp.dataset.name,
+    qty: Number(inp.dataset.qty),
+    price: parseRupiahInput(inp.value),
+  }));
+  if (items.length && items.every(it => it.price === 0)){
+    errEl.textContent = "Isi harga minimal satu servis dulu ya";
+    errEl.classList.remove("hidden");
+    return;
+  }
+  const extra = parseRupiahInput($("#invoiceExtra").value);
+  const total = items.reduce((s, it) => s + it.price, 0) + extra;
+  const invoice = { items, extra, total, ts: new Date().toISOString() };
+
+  const btn = $("#invoiceConfirm");
+  btn.disabled = true;
+  btn.querySelector("span").textContent = "Membuat invoice...";
+  try{
+    await updateById("orders", order.id, { invoice });
+    await reloadOrders();
+    await downloadInvoiceCard({ ...order, invoice });
+    showToast("Invoice tersimpan & berhasil diunduh ✅");
+  }catch(e){
+    console.error(e);
+    errEl.textContent = "Gagal menyimpan invoice, coba lagi ya";
+    errEl.classList.remove("hidden");
+  }
+  btn.disabled = false;
+  btn.querySelector("span").textContent = "Simpan & Cetak Invoice";
+  $("#invoiceModal").classList.add("hidden");
+  renderOrders();
+});
+
+async function downloadInvoiceCard(order){
+  const tpl = $("#orderCardTemplate");
+  const inv = order.invoice || { items: [], extra: 0, total: 0 };
+  const itemsSubtotal = inv.items.reduce((s, it) => s + it.price, 0);
+  const invoiceNo = `INV-${order.id.replace(/^ORD-/, "")}`;
+  const dateStr = new Date().toLocaleDateString("id-ID", { day:"numeric", month:"long", year:"numeric" });
+  const jadwalStr = order.tanggal
+    ? new Date(order.tanggal + "T00:00:00").toLocaleDateString("id-ID", { weekday:"long", day:"numeric", month:"long", year:"numeric" })
+    : "-";
+  const pay = _paymentInfo;
+  const defaultNote = "Invoice ini sah tanpa tanda tangan dan cap. Terima kasih telah mempercayakan servis AC Anda kepada kami.";
+  const footerNote = (pay && pay.footerNote) ? pay.footerNote : defaultNote;
+
+  tpl.innerHTML = `
+    <div class="inv-print" id="cpInner">
+      <div class="inv-head">
+        <div>
+          <div class="inv-brand"><i>${escapeHtml(currentTech.name)}</i></div>
+          <div class="inv-tagline">Servis &amp; Perawatan AC</div>
+          <div class="inv-areas">${currentTech.areas.map(escapeHtml).join(" · ")}</div>
+        </div>
+        <div class="inv-title-block">
+          <div class="inv-title">INVOICE</div>
+          <div class="inv-meta">
+            No. Invoice: <b>${escapeHtml(invoiceNo)}</b><br/>
+            Tanggal: <b>${dateStr}</b>
+          </div>
+        </div>
+      </div>
+
+      <div class="inv-grid2">
+        <div>
+          <div class="inv-block-label">Ditagihkan Kepada</div>
+          <div class="inv-name">${escapeHtml(order.namaPemesan || "-")}</div>
+          <div class="inv-line">${escapeHtml(order.alamat || "-")}</div>
+          <div class="inv-line">WhatsApp: <b>${escapeHtml(order.hpPemesan || "-")}</b></div>
+        </div>
+        <div>
+          <div class="inv-block-label">Detail Pekerjaan</div>
+          <div class="inv-line">Jadwal: <b>${escapeHtml(jadwalStr)}</b></div>
+          <div class="inv-line">Teknisi: <b>${escapeHtml(order.techName || currentTech.name)}</b></div>
+          ${order.catatan ? `<div class="inv-line">Catatan: ${escapeHtml(order.catatan)}</div>` : ""}
+        </div>
+      </div>
+
+      <div class="inv-divider"></div>
+      <div class="inv-table-head"><span>Deskripsi Layanan</span><span>Subtotal</span></div>
+      ${inv.items.map(it => `
+        <div class="inv-item-row">
+          <div>
+            <div class="inv-item-name">${escapeHtml(it.name)} ${it.qty > 1 ? `(${it.qty} unit)` : ""}</div>
+            <div class="inv-item-sub">${formatRupiah(it.qty ? it.price / it.qty : it.price)}/unit × ${it.qty}</div>
+          </div>
+          <div class="inv-item-price">${formatRupiah(it.price)}</div>
+        </div>
+      `).join("") || `<div class="inv-item-row"><div class="inv-item-name">Tidak ada rincian servis</div></div>`}
+
+      <div class="inv-summary">
+        <div class="inv-summary-box">
+          <div class="inv-summary-row"><span>Subtotal</span><span>${formatRupiah(itemsSubtotal)}</span></div>
+          ${inv.extra ? `<div class="inv-summary-row extra"><span>Biaya lain-lain</span><span>${formatRupiah(inv.extra)}</span></div>` : ""}
+          <div class="inv-summary-total"><span>Total</span><b>${formatRupiah(inv.total)}</b></div>
+        </div>
+      </div>
+
+      <div class="inv-pay-box">
+        ${pay && pay.bankName ? `
+          <div class="inv-pay-title">Pembayaran via Transfer Bank</div>
+          <div class="inv-pay-sub">Transfer sesuai nominal total, lalu kirim bukti transfer ke WhatsApp teknisi.</div>
+          <div class="inv-pay-account">
+            <div class="bank">${escapeHtml(pay.bankName)}</div>
+            <div class="num">${escapeHtml(pay.accountNumber)}</div>
+            <div class="an">a.n. ${escapeHtml(pay.accountName)}</div>
+          </div>
+        ` : `
+          <div class="inv-pay-title">Pembayaran</div>
+          <div class="inv-pay-cash">Pembayaran tunai atau sesuai kesepakatan dengan teknisi.</div>
+        `}
+      </div>
+
+      <div class="inv-note"><b>Catatan:</b> ${escapeHtml(footerNote)}</div>
+      <div class="inv-footer">
+        <span>Dicetak dari Teknisiku, ${new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"})}</span>
+        <span>Jujur, Transparan, Profesional.</span>
+      </div>
+    </div>
+  `;
+
+  const node = $("#cpInner");
+  await exportNodeAsPDF(node, `invoice-${order.id}.pdf`);
+  tpl.innerHTML = "";
+}
+
+/* =========================================================================
+   Tim Saya
+   ========================================================================= */
+$("#addMemberBtn").addEventListener("click", () => $("#memberForm").classList.toggle("hidden"));
+$("#memberFormCancel").addEventListener("click", () => {
+  $("#memberName").value = ""; $("#memberPhone").value = "";
+  $("#memberFormError").classList.add("hidden");
+  $("#memberForm").classList.add("hidden");
+});
+$("#memberFormSubmit").addEventListener("click", async () => {
+  const name = $("#memberName").value.trim();
+  const phone = $("#memberPhone").value.trim();
+  const errEl = $("#memberFormError");
+  if (!name){ errEl.textContent = "Nama anggota belum diisi"; errEl.classList.remove("hidden"); return; }
+
+  const newMember = { id: Date.now(), techId: currentTech.id, name, phone };
+  await setById("team_members", newMember.id, newMember);
+  await reloadTeam();
+
+  showToast(`Anggota "${name}" ditambahkan`);
+  $("#memberName").value = ""; $("#memberPhone").value = "";
+  errEl.classList.add("hidden");
+  $("#memberForm").classList.add("hidden");
+  renderTeam();
+});
+
+function renderTeam(){
+  const team = getTeam(currentTech.id);
+  const wrap = $("#memberList");
+  const empty = $("#memberEmpty");
+  if (!team.length){
+    wrap.innerHTML = "";
+    empty.classList.remove("hidden");
+    return;
+  }
+  empty.classList.add("hidden");
+  wrap.innerHTML = team.map(m => `
+    <div class="member-row">
+      <div class="avatar">${initials(m.name)}</div>
+      <div class="info">
+        <div class="name">${escapeHtml(m.name)}</div>
+        ${m.phone ? `<div class="phone">${escapeHtml(m.phone)}</div>` : ""}
+      </div>
+      <button class="member-del" data-mdel="${m.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16z"/></svg></button>
+    </div>
+  `).join("");
+  wrap.querySelectorAll("[data-mdel]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = Number(btn.dataset.mdel);
+      await removeById("team_members", id);
+      await reloadTeam();
+      showToast("Anggota dihapus");
+      renderTeam();
+    });
+  });
+}
+
+/* =========================================================================
+   Review tab (read-only — moderation happens in admin.html)
+   ========================================================================= */
+function renderReviews(){
+  const all = getReviews(currentTech.id);
+  const approved = all.filter(r => r.status === "approved");
+  const pending = all.filter(r => r.status === "pending");
+
+  $("#statRevTotal").textContent = all.length;
+  $("#statRevApproved").textContent = approved.length;
+  $("#statRevPending").textContent = pending.length;
+
+  const wrap = $("#reviewList");
+  const empty = $("#reviewEmpty");
+  if (!approved.length){
+    wrap.innerHTML = "";
+    empty.classList.remove("hidden");
+    return;
+  }
+  empty.classList.add("hidden");
+  wrap.innerHTML = approved.map(r => `
+    <div class="review-card">
+      <div class="review-name">${escapeHtml(r.name)}</div>
+      <div class="review-text">"${escapeHtml(r.text)}"</div>
+    </div>
+  `).join("");
+}
+
+/* =========================================================================
+   Init
+   ========================================================================= */
+function refreshAll(){
+  renderStats();
+  renderOrders();
+  renderCalendar();
+}
+
+const savedSession = sessionStorage.getItem(SESSION_KEY);
+
+(async function initApp(){
+  // Teknisi custom (dari admin.html) dan PIN custom harus dimuat dulu
+  // sebelum layar login/pencarian teknisi bisa dipakai.
+  try{
+    await Promise.all([reloadCustomTechs(), reloadTechPins()]);
+  }catch(err){
+    console.error("[initApp] gagal memuat data Firestore, lanjut dengan data bawaan saja:", err);
+  }
+  if (savedSession) enterDashboard(Number(savedSession));
+})();
+
+/* ====== ADDED: Change PIN Feature ====== */
+(function initChangePinFeature(){
+  const modal = $("#changePinModal");
+  const oldInput = $("#oldPinInput");
+  const newInput = $("#newPinInput");
+  const confirmInput = $("#confirmPinInput");
+  const errEl = $("#pinError");
+
+  // Auto filter to digits only and limit to 4
+  [oldInput, newInput, confirmInput].forEach(inp => {
+    inp.addEventListener("input", () => {
+      inp.value = inp.value.replace(/\D/g, "").slice(0, 4);
+    });
+  });
+
+  // Toggle show/hide for each PIN input
+  $$(".pin-toggle").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const target = document.getElementById(btn.dataset.target);
+      if (!target) return;
+      if (target.type === "password"){
+        target.type = "text";
+        btn.textContent = "🙈";
+      } else {
+        target.type = "password";
+        btn.textContent = "👁";
+      }
+    });
+  });
+
+  function openPinModal(){
+    oldInput.value = "";
+    newInput.value = "";
+    confirmInput.value = "";
+    oldInput.type = newInput.type = confirmInput.type = "password";
+    $$(".pin-toggle").forEach(b => b.textContent = "👁");
+    errEl.textContent = "";
+    errEl.classList.add("hidden");
+    modal.classList.remove("hidden");
+    setTimeout(() => oldInput.focus(), 80);
+  }
+  function closePinModal(){
+    modal.classList.add("hidden");
+  }
+
+  $("#changePinBtn").addEventListener("click", openPinModal);
+  $("#pinCancel").addEventListener("click", closePinModal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) closePinModal(); });
+
+  $("#pinSave").addEventListener("click", async () => {
+    const old = oldInput.value.trim();
+    const np = newInput.value.trim();
+    const cf = confirmInput.value.trim();
+    errEl.classList.add("hidden");
+
+    if (!/^\d{4}$/.test(old) || !/^\d{4}$/.test(np) || !/^\d{4}$/.test(cf)){
+      errEl.textContent = "PIN harus terdiri dari 4 digit angka.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    if (old !== getActivePin(currentTech)){
+      errEl.textContent = "PIN lama tidak sesuai.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    if (np !== cf){
+      errEl.textContent = "Konfirmasi PIN baru tidak cocok.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    if (np === old){
+      errEl.textContent = "PIN baru tidak boleh sama dengan PIN lama.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+
+    setCustomPin(currentTech.id, np).then(() => {
+      closePinModal();
+      showToast("🔑 PIN berhasil diganti! Gunakan PIN baru untuk masuk berikutnya.");
+    }).catch((e) => {
+      console.error(e);
+      errEl.textContent = "Gagal menyimpan PIN baru, coba lagi.";
+      errEl.classList.remove("hidden");
+    });
+  });
+
+  // Allow Enter in confirm field to save
+  confirmInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") $("#pinSave").click();
+  });
+})();
+/* ====== END ADDED: Change PIN Feature ====== */
+</script>
+</body>
+</html>
